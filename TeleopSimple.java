@@ -37,35 +37,30 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import static android.R.attr.hardwareAccelerated;
-import static android.R.attr.left;
-import static android.R.attr.right;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static com.qualcomm.robotcore.robot.RobotState.INIT;
 
-@TeleOp(name="ChooChoo1", group="Tekceratops")
+@TeleOp(name="SimpeTeleop", group="Tekceratops")
 //@Disabled
-public class TeleopChooChoo1 extends OpMode{
+
+// Simplest possible telop to get things working at all.
+public class TeleopSimple extends OpMode{
     // Objects that correspond to hardware devices.
     DcMotor  leftMotor   = null;
     DcMotor  rightMotor  = null;
     DcMotor harvesterMotor = null;
     DcMotor shooterMotor = null;
+    TouchSensor cockedTouchSensor = null;
     ModernRoboticsI2cGyro gyro = null;
     ColorSensor left_color = null;
     UltrasonicSensor ultrasonicSensor = null;
     LightSensor lightSensor = null;
-    Servo manipulator = null;
 
-    // Global variables.
     private ElapsedTime shooterTimer = new ElapsedTime();
     int shooterEncoder = 0;
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
@@ -73,8 +68,7 @@ public class TeleopChooChoo1 extends OpMode{
     double shooterPower = 0.0 ;
     boolean tryToCock = false;
 
-    // Code to run ONCE when the driver hits INIT.
-    // This initializes all of the hardware.
+    // Code to run ONCE when the driver hits INIT
     @Override
     public void init() {
         // Get the hardware map:
@@ -83,41 +77,37 @@ public class TeleopChooChoo1 extends OpMode{
         rightMotor.setDirection( DcMotor.Direction.REVERSE );
 
 
+
+        /*
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
-        manipulator = hardwareMap.servo.get("manipulator");
+        //harvooterMotor.setDirection( DcMotor.Direction.REVERSE);
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
         shooterMotor.setDirection( DcMotor.Direction.REVERSE );
         shooterMotor.setZeroPowerBehavior( BRAKE );
         shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // Positive means we are winding the spring.
-        shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
-
-
+        //shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
+        cockedTouchSensor = hardwareMap.touchSensor.get("cocked_ts");
         left_color = hardwareMap.colorSensor.get("left_color");
         gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
         ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
         lightSensor = hardwareMap.lightSensor.get("light");
-
+        */
 
         // Set motor powers to zero
         leftMotor.setPower( 0 );
         rightMotor.setPower( 0 );
-
-        // This is giving trouble
-         shooterMotor.setPower( 0 );
-
+        shooterMotor.setPower( 0 );
 
         // Set the LEDs off in the beginning
         left_color.enableLed( false );
         lightSensor.enableLed(true);
 
-
         // A deadzone for the joysticks is needed because they don't always
         // go to zero at rest.
         gamepad1.setJoystickDeadzone( (float) 0.05 );
         gamepad2.setJoystickDeadzone( (float) 0.05 );
-
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Bot", "ChooChoo");    //
@@ -135,7 +125,6 @@ public class TeleopChooChoo1 extends OpMode{
     /*
      * Code to run ONCE when the driver hits PLAY
      */
-
     @Override
     public void start() {
     }
@@ -155,16 +144,13 @@ public class TeleopChooChoo1 extends OpMode{
         boolean cocked = false;
         String cockedStatus = "WINDING";
         String colorStatus = "";
-        double upPosition = 0.9;
-        double downPosition = 0.35
-                ;
+
         /////////////////////////////////  Drive //////////////////////////
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = (double) Range.clip(-gamepad1.left_stick_y, -1, 1);
         right = (double) Range.clip(-gamepad1.right_stick_y, -1, 1);
         leftMotor.setPower(left);
         rightMotor.setPower(right);
-
 
         ///////////////////////// Harvestor Contol ///////////////////////////////////
         // Left joystick is variable speed in caase you want to ever go slower than max.
@@ -176,14 +162,6 @@ public class TeleopChooChoo1 extends OpMode{
         if (gamepad2.left_trigger > 0.5) harvesterPower = 1.00;
         if (gamepad2.left_bumper) harvesterPower = -1.00;
         harvesterMotor.setPower(harvesterPower);
-
-        if (gamepad2.x) {
-            manipulator.setPosition(downPosition);
-        }
-
-        if (gamepad2.b) {
-            manipulator.setPosition(upPosition);
-        }
 
         ////////////////// Shooter Control ////////////////////////////////////
         // Right trigger shoots, right bumper cocks.
