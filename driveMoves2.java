@@ -42,7 +42,7 @@ public class driveMoves2 {
         // Limit power is 0.1 + 0.2 for every foot from target.
         // But no more than 0.9.
         limitPower = 0.1 + distFromtarget * 0.2;
-        if (limitPower > 0.9) limitPower = 0.9;
+        if (limitPower > 0.8) limitPower = 0.8;
 
         if (motorPower > limitPower) motorPower = limitPower;
         if (motorPower > limitPower) motorPower = limitPower;
@@ -338,9 +338,10 @@ public class driveMoves2 {
 
 
     // Pivot a given number of degrees, from whatever it was when it started.
+    // This is used only for small moves, so slow pivot is good.
     public void pivotAngle(double degreesToPivot) throws InterruptedException {
         double finalAngle = (double) robot.heading + degreesToPivot;
-        pivotToAngle( finalAngle );
+        slowPivot( finalAngle );
     }
 
     // Drive forward in an arc until we reach the heading.
@@ -349,7 +350,7 @@ public class driveMoves2 {
         desiredHeading = finalAngle;
         double degreeToPivot = finalAngle - robot.heading;
         // but we only want to pivot a fraction:
-        double compDegreeToPivot = degreeToPivot * 0.88;
+        double compDegreeToPivot = degreeToPivot * 0.80;
         double compFinalAngle = robot.heading + compDegreeToPivot;
         robot.updateSensors();
         motorPower = 0.5;
