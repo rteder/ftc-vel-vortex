@@ -37,19 +37,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import static android.R.attr.hardwareAccelerated;
-import static android.R.attr.left;
-import static android.R.attr.right;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static com.qualcomm.robotcore.robot.RobotState.INIT;
 
 @TeleOp(name="ChooChoo1", group="Tekceratops")
 //@Disabled
@@ -59,6 +53,7 @@ public class TeleopChooChoo1 extends OpMode{
     DcMotor  rightMotor  = null;
     DcMotor harvesterMotor = null;
     DcMotor shooterMotor = null;
+    DcMotor liftMotor = null;
     ModernRoboticsI2cGyro gyro = null;
     ColorSensor left_color = null;
     UltrasonicSensor ultrasonicSensor = null;
@@ -69,9 +64,16 @@ public class TeleopChooChoo1 extends OpMode{
     private ElapsedTime shooterTimer = new ElapsedTime();
     int shooterEncoder = 0;
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
+    int harvesterEncoder = 0;
+    int harvesterCountsPerHalfRev = 720;
+    double upPosition = 0.75;
+    double downPosition = 0.15;
     double shooterAngle = 0;
+    double harvesterAngle = 0;
     double shooterPower = 0.0 ;
     boolean tryToCock = false;
+    boolean harvesterRunning = false;
+
 
     // Code to run ONCE when the driver hits INIT.
     // This initializes all of the hardware.
@@ -84,7 +86,12 @@ public class TeleopChooChoo1 extends OpMode{
 
 
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
+        harvesterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        harvesterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        harvesterMotor.setZeroPowerBehavior( BRAKE );
+        harvesterMotor.setDirection( DcMotor.Direction.REVERSE);
         manipulator = hardwareMap.servo.get("manipulator");
+        liftMotor = hardwareMap.dcMotor.get("lift");
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
         shooterMotor.setDirection( DcMotor.Direction.REVERSE );
         shooterMotor.setZeroPowerBehavior( BRAKE );
@@ -118,9 +125,10 @@ public class TeleopChooChoo1 extends OpMode{
         gamepad1.setJoystickDeadzone( (float) 0.05 );
         gamepad2.setJoystickDeadzone( (float) 0.05 );
 
+        manipulator.setPosition(upPosition);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Bot", "ChooChoo");    //
+        telemetry.addData("Bot", "ChooChoo");
         updateTelemetry(telemetry);
     }
 
@@ -155,9 +163,8 @@ public class TeleopChooChoo1 extends OpMode{
         boolean cocked = false;
         String cockedStatus = "WINDING";
         String colorStatus = "";
-        double upPosition = 0.9;
-        double downPosition = 0.35
-                ;
+        double harvesterPosition = 0;
+
         /////////////////////////////////  Drive //////////////////////////
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = (double) Range.clip(-gamepad1.left_stick_y, -1, 1);
@@ -166,24 +173,63 @@ public class TeleopChooChoo1 extends OpMode{
         rightMotor.setPower(right);
 
 
-        ///////////////////////// Harvestor Contol ///////////////////////////////////
+        ///////////////////////// Harvester Control ///////////////////////////////////
         // Left joystick is variable speed in caase you want to ever go slower than max.
         // Left trigger is harvest full speed
         // Left Bumper is un-harvest, full speed.
         // Yellow is harvest slowly to keep balls from coming out.
-        harvesterPower = (double) gamepad2.left_stick_y * -1.0;
-        if (gamepad2.y) harvesterPower = -0.10;
-        if (gamepad2.left_trigger > 0.5) harvesterPower = 1.00;
-        if (gamepad2.left_bumper) harvesterPower = -1.00;
-        harvesterMotor.setPower(harvesterPower);
+        // harvesterPower = (double) gamepad2.left_stick_y * -1.0;
+        harvesterEncoder = harvesterMotor.getCurrentPosition();
+        int harvesterEncMod = harvesterEncoder % harvesterCountsPerHalfRev;
+        harvesterAngle = 180 * (double) harvesterEncMod / (double) harvesterCountsPerHalfRev;
+        // harvesterAngle = Math.abs(harvesterAngle);
 
-        if (gamepad2.x) {
+        if (gamepad2.left_trigger > 0.5) {
+            harvesterPower = 1.00;
+            harvesterRunning = true;
+
+        } else if (gamepad2.left_bumper) {
+            harvesterPower = -1.00;
+            harvesterRunning = true;
+        } else {
+            harvesterRunning = false;
+            harvesterPower = 0.00;
+        }
+        // Makes sure harvester is zeroed.
+        if (harvesterRunning == false){
+            if ((harvesterAngle > 165|| (harvesterAngle < 30))){
+                // Right where we want it!
+                harvesterPower = 0.0;
+            } else if (harvesterAngle > 120){
+                // Almost there, go really slow
+                harvesterPower = 0.05;
+            } else {
+                // Run until we are closer.
+                harvesterPower = 0.1;
+            }
+        }
+
+        harvesterMotor.setPower(harvesterPower);
+        ////////////////////////////////// Manipulator Control /////////////////////////////////////////
+        if (gamepad1.y) {
             manipulator.setPosition(downPosition);
         }
 
-        if (gamepad2.b) {
+        if (gamepad1.a) {
             manipulator.setPosition(upPosition);
         }
+
+        ////////////////////////////////////// Lift Control /////////////////////////////////////////////
+
+        if( gamepad2.y) {
+            liftMotor.setPower( 1.0 );
+
+        } else if (gamepad2.a) {
+            liftMotor.setPower( -1.0 );
+        } else  {
+            liftMotor.setPower( 0 );
+        }
+
 
         ////////////////// Shooter Control ////////////////////////////////////
         // Right trigger shoots, right bumper cocks.
@@ -239,17 +285,20 @@ public class TeleopChooChoo1 extends OpMode{
 
         //////////////////////  Telemetry /////////////////////////////////////////
         // Send useful data about the robot status:
+        /*
         heading = gyro.getHeading();
         range = ultrasonicSensor.getUltrasonicLevel();
         light = lightSensor.getLightDetected();
         left_color.enableLed( false );
+        */
 
         //telemetry.addData("left", String.format("%.2f", left) + "  right: " + String.format("%.2f", right)
         //        + " harv" + String.format("%.2f", harvesterPower));
 
         //telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
         //telemetry.addData("shooter Angle", String.format("%.1f", shooterAngle));
-
+        telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
+        telemetry.addData("Harvester Power", String.format("%.2f", harvesterPower));
         // colorStatus = String.format("Left R %d B %d ", left_color.red(), left_color.blue() );
         // telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
         // + " Light: " + String.format("%.2f", light));
