@@ -146,8 +146,14 @@ public class AutoChooChoo4 extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
         // Use this to estimate overshoot of 90 deg pivot.
+
         /*
+        drive.pivotToAngle( 90 );
         waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+
+        /*
         drive.arcToAngle( 90, true );
         waitForGreen();
         drive.arcToAngle( 0, true );
@@ -232,7 +238,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         // waitForGreen();
         senseBeaconAndClaim(); // claim that beacon
         drive.driveShortDistance( - 0.1, true );
-        drive.slowPivot( setHeading);              // straight away from the beacon.
+        drive.pivotToAngle(setHeading);              // straight away from the beacon.
         // drive.pivotToAngle( setHeading );      // straight away from the beacon.
         // waitForGreen();
         drive.driveFromRange( 20, setHeading );    // Now back away from beacon.

@@ -244,138 +244,57 @@ public class driveMoves2 {
 
 
     public void pivotToAngle(double finalAngle) throws InterruptedException {
+        double degreesToPivot = Math.abs(robot.heading -finalAngle);
         desiredHeading = finalAngle;
         double compensatedFinalAngle = 0;
-        // First get within 5 degrees of final.
-        if (finalAngle > robot.heading) {
-                compensatedFinalAngle = finalAngle - 10;
+
+        if (degreesToPivot < 35) {
+            Pivot( finalAngle, 0.05);
+            return;
         } else {
-            compensatedFinalAngle = finalAngle + 10;
+            // Pivot fast, but stop 30 degrees shy of final angle
+            // to allow for inertial.
+            if (finalAngle > robot.heading) {
+                compensatedFinalAngle = finalAngle - 40;
+            } else {
+                compensatedFinalAngle = finalAngle + 40;
+            }
+            Pivot( compensatedFinalAngle, 0.3);
+            // Now pivot slow the rest of the way.
+            Pivot( finalAngle, 0.05);
         }
-        profilePivot( compensatedFinalAngle );
-        slowPivot( finalAngle );
-        slowPivot( finalAngle );
         stopDrive();
     }
 
-
-    // profile Pivot privots to the finalAngle, not desiredHeading
-    // This is so you can use it to get close with this.
-    public void profilePivot( double finalAngle) throws InterruptedException {
-        robot.updateSensors();
-        accelTimer.reset();
-        motorPower = 0.1;
-
-        if (finalAngle > robot.heading) {
-            while (true) {
-                pivotProfile( robot.heading - finalAngle );
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(-motorPower);
-                if (robot.heading >= finalAngle) break;
-                robot.updateSensors();
-            }
-        } else {
-            while (true) {
-                pivotProfile( robot.heading - finalAngle );
-                robot.leftMotor.setPower(-motorPower);
-                robot.rightMotor.setPower(motorPower);
-                if (robot.heading <= finalAngle) break;
-                robot.updateSensors();
-            }
-        }
-        // Stop the motors afterwards:
-        stopDrive();
-    }
-
-    // Slow pivot has no profile and is very slow, for a precise last bit of turning.
-    public void slowPivot(double finalAngle) throws InterruptedException {
+    // Pivot, used by other routines.
+    // Note that it does not stop the motors at the end!
+    public void Pivot(double finalAngle, double pivotPower ) throws InterruptedException {
         desiredHeading = finalAngle;
         robot.updateSensors();
-        motorPower = 0.05;
 
         if (finalAngle > robot.heading) {
             while (true) {
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(-motorPower);
+                robot.leftMotor.setPower(pivotPower);
+                robot.rightMotor.setPower(-pivotPower);
                 if (robot.heading >= finalAngle) break;
                 robot.updateSensors();
             }
         } else {
             while (true) {
-                robot.leftMotor.setPower(-motorPower);
-                robot.rightMotor.setPower(motorPower);
+                robot.leftMotor.setPower(-pivotPower);
+                robot.rightMotor.setPower(pivotPower);
                 if (robot.heading <= finalAngle) break;
                 robot.updateSensors();
             }
         }
-        // Stop the motors afterwards:
-        stopDrive();
-    }
-
-
-
-    // Pivot profile
-    // Increase the speed gradually to do a pivot, but slow down near the end for accuracy.
-    private void pivotProfile( double distFromtarget ) {
-        // Make sure these are all positive numbers coming ing.
-        distFromtarget = Math.abs( distFromtarget);
-        double limitPower = 0.9;
-
-        // Accelerate!  Increase the motor power by 0.05 every 100 mS
-        if (accelTimer.milliseconds() > 100) {
-            motorPower += 0.05;
-            accelTimer.reset();
-        }
-
-        // Limit power is 0.1 + 0.1 for every twenty degrees from target.
-        limitPower = 0.05 + distFromtarget / 200;
-
-        // But no more than 0.4.
-        if (limitPower > 0.4) limitPower = 0.4;
-
-        if (motorPower > limitPower) motorPower = limitPower;
-    }
-
+   }
 
     // Pivot a given number of degrees, from whatever it was when it started.
-    // This is used only for small moves, so slow pivot is good.
     public void pivotAngle(double degreesToPivot) throws InterruptedException {
         double finalAngle = (double) robot.heading + degreesToPivot;
-        slowPivot( finalAngle );
+        pivotToAngle( finalAngle );
     }
 
-    // Drive forward in an arc until we reach the heading.
-    // Smooth turns for speed!
-    public void arcToAngle(double finalAngle, boolean finalStop ) throws InterruptedException {
-        desiredHeading = finalAngle;
-        double degreeToPivot = finalAngle - robot.heading;
-        // but we only want to pivot a fraction:
-        double compDegreeToPivot = degreeToPivot * 0.80;
-        double compFinalAngle = robot.heading + compDegreeToPivot;
-        robot.updateSensors();
-        motorPower = 0.5;
 
-        // Arc right
-        if (finalAngle > robot.heading) {
-            while (true) {
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(motorPower * 0.1);
-                if (robot.heading >= compFinalAngle) break;
-                opMode.telemetry.addData("compFinalAngle", compFinalAngle );
-                opMode.telemetry.update();
-                robot.updateSensors();
-            }
-        } else {
-            // Arc left
-            while (true) {
-                robot.leftMotor.setPower(motorPower*0.1);
-                robot.rightMotor.setPower(motorPower);
-                if (robot.heading <= compFinalAngle) break;
-                robot.updateSensors();
-            }
-        }
-
-        if (finalStop ) stopDrive();
-    }
 
 }
