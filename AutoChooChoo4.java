@@ -229,7 +229,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         if (teamColorBlue){
             drive.Distance( 0.1);
         }else {
-            drive.Distance( 0.1);  
+            drive.Distance( 0.1);
         }
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon

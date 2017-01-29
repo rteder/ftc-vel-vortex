@@ -45,13 +45,17 @@ public class driveMoves2 {
     void Distance(double distanceToGo ) throws InterruptedException {
         robot.updateSensors();
         double target = robot.total_distance_feet + distanceToGo;
-        double shiftPoint = 0; // distance where we change power.
 
         // To keep it simple, all backward moves are at low power.
         if (distanceToGo < 0) {
             ToTargetDistance(target, 0.2);
             return;
         }
+
+
+       double shiftPoint = robot.total_distance_feet + 1;
+        double decelPoint1 = target - 2;
+        double decelPoint2 = target - 1;
 
         if (distanceToGo < 1.0) {
             // Short move (less than a foot) at low power
@@ -60,22 +64,22 @@ public class driveMoves2 {
             return;
         } else if (distanceToGo < 3.0) {
             // between on and two feet, do the first foot at higher power.
-            shiftPoint = robot.total_distance_feet + 1;
             ToTargetDistance(shiftPoint, 0.4);
             ToTargetDistance(target, 0.2);
             stopDrive();
             return;
         } else {
             // First half foot at 0.4
-            shiftPoint = robot.total_distance_feet + 0.5;
             ToTargetDistance(shiftPoint, 0.4);
-            // next half foot at 0.6
-            shiftPoint = robot.total_distance_feet + 0.5;
-            ToTargetDistance(shiftPoint, 0.6);
 
-            // Now when we are a foot from the target slow down.
-            shiftPoint = robot.total_distance_feet + distanceToGo - 1;
-            ToTargetDistance(shiftPoint, 0.2);
+            // Now run at 0.6 until 2 feet out
+            ToTargetDistance(decelPoint1, 0.6);
+
+            // Now run at 0.4 until a foot away
+            ToTargetDistance(decelPoint2, 0.4);
+
+            // And come in slow for final foot.
+            ToTargetDistance(target, 0.2);
             stopDrive();
             return;
         }
