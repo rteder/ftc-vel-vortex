@@ -147,6 +147,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         // Delete or comment this out for competition
         // Use this to estimate overshoot of 90 deg pivot.
 
+        /*
         drive.Distance( 0.6);
         waitForGreen();
 
@@ -154,13 +155,14 @@ public class AutoChooChoo4 extends LinearOpMode {
         waitForGreen();
         drive.Distance( 4 );
         waitForGreen();
+        */
 
-        /*
+
         drive.pivotToAngle( 90 );
         waitForGreen();
         drive.pivotToAngle( 0 );
         waitForGreen();
-        */
+
 
         /////////////////////  AUTONOMOUS CODE TO MOVE THE BALL ////////////////
         // Mission: Move ball
@@ -189,7 +191,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         if (teamColorBlue){
            setHeading = 44;             // Point just a bit away from parallel to goal entrance.
         } else {
-           setHeading = -48;
+           setHeading = -47;
         }
         drive.pivotToAngle( setHeading );
         drive.Distance(4.2);            // Should end up near the beaon, line, at an angle.
@@ -213,7 +215,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         drive.Distance( - 0.1 );
         drive.pivotToAngle(setHeading);     // straight away from the beacon.
        // waitForGreen();
-        drive.driveFromRange( 20, setHeading );    // Now back away from beacon.
+        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
         // waitForGreen();
         // Here where we would shoot into the goal if we have time.
 

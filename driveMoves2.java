@@ -234,22 +234,43 @@ public class driveMoves2 {
     public void pivotToAngle(double finalAngle) throws InterruptedException {
         double degreesToPivot = Math.abs(robot.heading -finalAngle);
         desiredHeading = finalAngle;
+        double goSlowAngle = 0;
         double compensatedFinalAngle = 0;
 
-        if (degreesToPivot < 35) {
-            Pivot( finalAngle, 0.05);
-            return;
+        if (finalAngle > robot.heading) {
+            compensatedFinalAngle = finalAngle - 5;
         } else {
-            // Pivot fast, but stop 30 degrees shy of final angle
+            compensatedFinalAngle = finalAngle + 5;
+        }
+
+        if (degreesToPivot < 10) {
+            // Really small pivots just make really slow, no compensation
+            Pivot( finalAngle, 0.1);
+        } else if (degreesToPivot < 35) {
+            Pivot( compensatedFinalAngle, 0.1);
+            return;
+        } else if (degreesToPivot < 60 ){
+            // Pivot fast, but stop 20 degrees shy of final angle
             // to allow for inertial.
             if (finalAngle > robot.heading) {
-                compensatedFinalAngle = finalAngle - 40;
+                goSlowAngle = finalAngle - 20;
             } else {
-                compensatedFinalAngle = finalAngle + 40;
+                goSlowAngle = finalAngle + 20;
             }
-            Pivot( compensatedFinalAngle, 0.3);
+            Pivot( goSlowAngle, 0.3);
             // Now pivot slow the rest of the way.
-            Pivot( finalAngle, 0.05);
+            Pivot( compensatedFinalAngle, 0.1);
+        } else {
+            // Pivot fast, but stop well shy of final angle
+            // to allow for inertial.
+            if (finalAngle > robot.heading) {
+                goSlowAngle = finalAngle - 40;
+            } else {
+                goSlowAngle = finalAngle + 40;
+            }
+            Pivot( goSlowAngle, 0.3);
+            // Now pivot slow the rest of the way.
+            Pivot( compensatedFinalAngle, 0.1);
         }
         stopDrive();
     }
