@@ -13,7 +13,6 @@ public class driveMoves2 {
     HardwareChooChoo robot; // Allow us to use the robot hardware as an object.
 
     double desiredHeading = 0; // A globabl property
-    double motorPower = 0.5;  // Positive means forward.
     private ElapsedTime accelTimer = new ElapsedTime(); // For accelerations.
 
     // This is the contructor, called when the object is created.
@@ -24,35 +23,11 @@ public class driveMoves2 {
     }
 
     /////////////////////////////   STRAIGHT MOVES /////////////////////////////////////
-    // Power Profile.
-    // This adjusts the power of the robot over the course of a move, gradually
-    // accelerating and then decellerating.
-    // When far from the target, gradually increase motorPower.
-    // Decrease power as we get close.
-      private void powerProfile( double distFromtarget, boolean forward ){
-        double limitPower;
-        // Make sure these are all positive numbers coming ing.
-        distFromtarget = Math.abs( distFromtarget);
-        // Accelerate!  Increase the motor power by 0.1 every 100 mS
-        if (accelTimer.milliseconds() > 100) {
-            if ( forward) motorPower += 0.1;
-            else motorPower -= 0.1;
-            accelTimer.reset();
-        }
-        // Limit power is 0.1 + 0.2 for every foot from target.
-        // But no more than 0.9.
-        limitPower = 0.1 + distFromtarget * 0.2;
-        if (limitPower > 0.8) limitPower = 0.8;
-
-        if (motorPower > limitPower) motorPower = limitPower;
-        if (motorPower > limitPower) motorPower = limitPower;
-        motorPower = Range.clip( motorPower, -limitPower, limitPower);
-    }
 
     // Drive forward at the desired nominal power, at the desiredheading.
     // You should start any such move pointed in the right direction.
     // This will make small adjustments in the motor power to maintain the heading.
-    void driveAtHeading(double nominalPower ) throws InterruptedException {
+    void AtHeading(double nominalPower ) throws InterruptedException {
         double leftPower = nominalPower;
         double gain = 0.10;
         double angleError = robot.heading - desiredHeading;
@@ -67,44 +42,59 @@ public class driveMoves2 {
     // Drive Forward or backward a given distance, in feet.
     // Will accelerate and decelerate to ge there quickly.
     // Set finalStop if you want it to stop at the end.  Otherwise it will be moving slowly.
-    void driveDistance(double distanceToGo, boolean finalStop ) throws InterruptedException {
+    void Distance(double distanceToGo ) throws InterruptedException {
         robot.updateSensors();
         double target = robot.total_distance_feet + distanceToGo;
-        boolean forward;
-        if (distanceToGo > 0) {
-            motorPower = 0.2;
-            forward = true;
-        } else {
-            motorPower = -0.2;
-            forward = false;
-        }
-        accelTimer.reset();
 
-             while (true) {
-                powerProfile( target - robot.total_distance_feet, forward  );
-                driveAtHeading( motorPower);
-                if (forward) {
-                    if (robot.total_distance_feet >= target) break;
-                } else {
-                    if (robot.total_distance_feet <= target) break;
-                }
-                robot.updateSensors();
-            }
-        if (finalStop ) stopDrive();
+        // To keep it simple, all backward moves are at low power.
+        if (distanceToGo < 0) {
+            ToTargetDistance(target, 0.2);
+            return;
+        }
+
+
+       double shiftPoint = robot.total_distance_feet + 1;
+        double decelPoint1 = target - 2;
+        double decelPoint2 = target - 1;
+
+        if (distanceToGo < 1.0) {
+            // Short move (less than a foot) at low power
+            ToTargetDistance(target, 0.2);
+            stopDrive();
+            return;
+        } else if (distanceToGo < 3.0) {
+            // between on and two feet, do the first foot at higher power.
+            ToTargetDistance(shiftPoint, 0.4);
+            ToTargetDistance(target, 0.2);
+            stopDrive();
+            return;
+        } else {
+            // First half foot at 0.4
+            ToTargetDistance(shiftPoint, 0.4);
+
+            // Now run at 0.6 until 2 feet out
+            ToTargetDistance(decelPoint1, 0.6);
+
+            // Now run at 0.4 until a foot away
+            ToTargetDistance(decelPoint2, 0.4);
+
+            // And come in slow for final foot.
+            ToTargetDistance(target, 0.2);
+            stopDrive();
+            return;
+        }
     }
 
-    // Drive a short distance Forward or backward a given distance, in feet.
-    // This does not have the decel profile because it does not get up to speed in
-    // that short time.  So for less than one foot, this will be faster.
-    void driveShortDistance(double distanceToGo, boolean finalStop ) throws InterruptedException {
-        robot.updateSensors();
-        double target = robot.total_distance_feet + distanceToGo;
-        motorPower = 0.2;
-        accelTimer.reset();
 
-        if ( distanceToGo >=0 ) {
+    // Drive at the specified distance to the target distance, given as the
+    // total from the start of the run.
+    void ToTargetDistance(double target, double power ) throws InterruptedException {
+        robot.updateSensors();
+        boolean forward = target > robot.total_distance_feet;
+
+        if ( forward ) {
             while (true) {
-                driveAtHeading( motorPower );
+                AtHeading( power );
                 if (robot.total_distance_feet >= target) break;
                 robot.updateSensors();
             }
@@ -112,23 +102,20 @@ public class driveMoves2 {
             while (true) { // Drive backwards if the target is behind us.
                 // Drive at heading does not work right with negative value, so just
                 // drive.
-                robot.leftMotor.setPower( - motorPower);
-                robot.rightMotor.setPower( - motorPower);
+                robot.leftMotor.setPower( - power);
+                robot.rightMotor.setPower( - power);
                 if (robot.total_distance_feet <= target) break;
                 robot.updateSensors();
-                // Stop the motors afterwards:
             }
         }
-        if (finalStop ) stopDrive();
     }
 
     // Drive for a fixed amount of time, at a given power.
     // Useful for pressing beacon buttons, because it will slow down if it has resisitance.
     // Does NOT try to maintain a heading.
-    void driveForTime( double targetMillisconds, double targetPower )throws InterruptedException {
+    void ForTime(double targetMillisconds, double targetPower )throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        motorPower = targetPower;
         while (accelTimer.milliseconds() < targetMillisconds) {
             robot.leftMotor.setPower(targetPower);
             robot.rightMotor.setPower(targetPower);
@@ -136,6 +123,7 @@ public class driveMoves2 {
         }
         stopDrive();
     }
+
 
     // Shut everything down and do nothing.
     public void stopAndWait() throws InterruptedException {
@@ -158,7 +146,7 @@ public class driveMoves2 {
     public void driveToLine()throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.2;  // Nice and slow.
         while (true) {
             robot.leftMotor.setPower(motorPower);
             robot.rightMotor.setPower(motorPower);
@@ -180,12 +168,12 @@ public class driveMoves2 {
     public void driveToRange(double targetRange, boolean finalStop ) throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.2;  // Nice and slow.
         // Drive as long as we are are outside a range.
         // The sensor will sometimes say a range of zero, which is not valid.
         // So also keep driving if we do not have a valid range reading.
         while ((robot.range > targetRange) || (robot.range < 1.0)) {
-            driveAtHeading( motorPower );
+            AtHeading( motorPower );
             robot.updateSensors();
             // If this takes more than five seconds some thing is horribly wrong.  Stop.
             if (accelTimer.milliseconds() > 5000) {
@@ -200,7 +188,7 @@ public class driveMoves2 {
     public void driveFromRange(double targetRange, double desiredHeading ) throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.2;  // Nice and slow.
         while (robot.range < targetRange) {
             // Drive at heading does not work right with negative value, so just
             // drive.
@@ -219,12 +207,12 @@ public class driveMoves2 {
     public boolean driveToColor( boolean finalStop )throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        motorPower = 0.1;  // Really slow!
+        double motorPower = 0.1;  // Really slow!
         // Drive as long as we are are outside a range.
         // The sensor will sometimes say a range of zero, which is not valid.
         // So also keep driving if we do not have a valid range reading.
         while (true) {
-            driveAtHeading( motorPower );
+            AtHeading( motorPower );
             robot.updateSensors();
             if (robot.right_color.red() + robot.right_color.blue() > 3) break;
             // If this takes more than five seconds some thing is horribly wrong.  Stop.
@@ -244,138 +232,78 @@ public class driveMoves2 {
 
 
     public void pivotToAngle(double finalAngle) throws InterruptedException {
+        double degreesToPivot = Math.abs(robot.heading -finalAngle);
         desiredHeading = finalAngle;
+        double goSlowAngle = 0;
         double compensatedFinalAngle = 0;
-        // First get within 5 degrees of final.
+
         if (finalAngle > robot.heading) {
-                compensatedFinalAngle = finalAngle - 10;
+            compensatedFinalAngle = finalAngle - 5;
         } else {
-            compensatedFinalAngle = finalAngle + 10;
+            compensatedFinalAngle = finalAngle + 5;
         }
-        profilePivot( compensatedFinalAngle );
-        slowPivot( finalAngle );
-        slowPivot( finalAngle );
+
+        if (degreesToPivot < 10) {
+            // Really small pivots just make really slow, no compensation
+            Pivot( finalAngle, 0.1);
+        } else if (degreesToPivot < 35) {
+            Pivot( compensatedFinalAngle, 0.1);
+            return;
+        } else if (degreesToPivot < 60 ){
+            // Pivot fast, but stop 20 degrees shy of final angle
+            // to allow for inertial.
+            if (finalAngle > robot.heading) {
+                goSlowAngle = finalAngle - 20;
+            } else {
+                goSlowAngle = finalAngle + 20;
+            }
+            Pivot( goSlowAngle, 0.3);
+            // Now pivot slow the rest of the way.
+            Pivot( compensatedFinalAngle, 0.1);
+        } else {
+            // Pivot fast, but stop well shy of final angle
+            // to allow for inertial.
+            if (finalAngle > robot.heading) {
+                goSlowAngle = finalAngle - 40;
+            } else {
+                goSlowAngle = finalAngle + 40;
+            }
+            Pivot( goSlowAngle, 0.3);
+            // Now pivot slow the rest of the way.
+            Pivot( compensatedFinalAngle, 0.1);
+        }
         stopDrive();
     }
 
-
-    // profile Pivot privots to the finalAngle, not desiredHeading
-    // This is so you can use it to get close with this.
-    public void profilePivot( double finalAngle) throws InterruptedException {
-        robot.updateSensors();
-        accelTimer.reset();
-        motorPower = 0.1;
-
-        if (finalAngle > robot.heading) {
-            while (true) {
-                pivotProfile( robot.heading - finalAngle );
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(-motorPower);
-                if (robot.heading >= finalAngle) break;
-                robot.updateSensors();
-            }
-        } else {
-            while (true) {
-                pivotProfile( robot.heading - finalAngle );
-                robot.leftMotor.setPower(-motorPower);
-                robot.rightMotor.setPower(motorPower);
-                if (robot.heading <= finalAngle) break;
-                robot.updateSensors();
-            }
-        }
-        // Stop the motors afterwards:
-        stopDrive();
-    }
-
-    // Slow pivot has no profile and is very slow, for a precise last bit of turning.
-    public void slowPivot(double finalAngle) throws InterruptedException {
+    // Pivot, used by other routines.
+    // Note that it does not stop the motors at the end!
+    public void Pivot(double finalAngle, double pivotPower ) throws InterruptedException {
         desiredHeading = finalAngle;
         robot.updateSensors();
-        motorPower = 0.05;
 
         if (finalAngle > robot.heading) {
             while (true) {
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(-motorPower);
+                robot.leftMotor.setPower(pivotPower);
+                robot.rightMotor.setPower(-pivotPower);
                 if (robot.heading >= finalAngle) break;
                 robot.updateSensors();
             }
         } else {
             while (true) {
-                robot.leftMotor.setPower(-motorPower);
-                robot.rightMotor.setPower(motorPower);
+                robot.leftMotor.setPower(-pivotPower);
+                robot.rightMotor.setPower(pivotPower);
                 if (robot.heading <= finalAngle) break;
                 robot.updateSensors();
             }
         }
-        // Stop the motors afterwards:
-        stopDrive();
-    }
-
-
-
-    // Pivot profile
-    // Increase the speed gradually to do a pivot, but slow down near the end for accuracy.
-    private void pivotProfile( double distFromtarget ) {
-        // Make sure these are all positive numbers coming ing.
-        distFromtarget = Math.abs( distFromtarget);
-        double limitPower = 0.9;
-
-        // Accelerate!  Increase the motor power by 0.05 every 100 mS
-        if (accelTimer.milliseconds() > 100) {
-            motorPower += 0.05;
-            accelTimer.reset();
-        }
-
-        // Limit power is 0.1 + 0.1 for every twenty degrees from target.
-        limitPower = 0.05 + distFromtarget / 200;
-
-        // But no more than 0.4.
-        if (limitPower > 0.4) limitPower = 0.4;
-
-        if (motorPower > limitPower) motorPower = limitPower;
-    }
-
+   }
 
     // Pivot a given number of degrees, from whatever it was when it started.
-    // This is used only for small moves, so slow pivot is good.
     public void pivotAngle(double degreesToPivot) throws InterruptedException {
         double finalAngle = (double) robot.heading + degreesToPivot;
-        slowPivot( finalAngle );
+        pivotToAngle( finalAngle );
     }
 
-    // Drive forward in an arc until we reach the heading.
-    // Smooth turns for speed!
-    public void arcToAngle(double finalAngle, boolean finalStop ) throws InterruptedException {
-        desiredHeading = finalAngle;
-        double degreeToPivot = finalAngle - robot.heading;
-        // but we only want to pivot a fraction:
-        double compDegreeToPivot = degreeToPivot * 0.80;
-        double compFinalAngle = robot.heading + compDegreeToPivot;
-        robot.updateSensors();
-        motorPower = 0.5;
 
-        // Arc right
-        if (finalAngle > robot.heading) {
-            while (true) {
-                robot.leftMotor.setPower(motorPower);
-                robot.rightMotor.setPower(motorPower * 0.1);
-                if (robot.heading >= compFinalAngle) break;
-                opMode.telemetry.addData("compFinalAngle", compFinalAngle );
-                opMode.telemetry.update();
-                robot.updateSensors();
-            }
-        } else {
-            // Arc left
-            while (true) {
-                robot.leftMotor.setPower(motorPower*0.1);
-                robot.rightMotor.setPower(motorPower);
-                if (robot.heading <= compFinalAngle) break;
-                robot.updateSensors();
-            }
-        }
-
-        if (finalStop ) stopDrive();
-    }
 
 }

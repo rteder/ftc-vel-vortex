@@ -66,8 +66,8 @@ public class AutoChooChoo4 extends LinearOpMode {
         }
 
         // Drive forward to claim the beacon, and then back off.
-        drive.driveForTime( 600, 0.3);
-        drive.driveForTime( 300, -0.3);
+        drive.ForTime( 600, 0.3);
+        drive.ForTime( 300, -0.3);
     }
 
     // Color sorting utility, for beacon claiming.
@@ -146,32 +146,23 @@ public class AutoChooChoo4 extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
         // Use this to estimate overshoot of 90 deg pivot.
+
         /*
-        waitForGreen();
-        drive.arcToAngle( 90, true );
-        waitForGreen();
-        drive.arcToAngle( 0, true );
-        waitForGreen();
-        drive.arcToAngle( -90, true );
-        waitForGreen();
-        drive.arcToAngle( 0, true );
+        drive.Distance( 0.6);
         waitForGreen();
 
-
-        //drive.profilePivot( 80 );
+        drive.Distance( 2 );
         waitForGreen();
-        drive.pivotToAngle( 90 );
-        waitForGreen();
-        //sleep( 5000);
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        //sleep( 5000);
-        drive.pivotToAngle( -90 );
-        waitForGreen();
-        //drive.stopAndWait();
-        drive.pivotToAngle( 0 );
+        drive.Distance( 4 );
         waitForGreen();
         */
+
+
+        drive.pivotToAngle( 90 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+
 
         /////////////////////  AUTONOMOUS CODE TO MOVE THE BALL ////////////////
         // Mission: Move ball
@@ -180,10 +171,10 @@ public class AutoChooChoo4 extends LinearOpMode {
         if (moveBall){
             sleep( 10000 );
             drive.desiredHeading = 0;
-            drive.driveDistance(-2.5, true );  // Should end up near center goal.
+            drive.Distance(-2.5 );  // Should end up near center goal.
             setHeading = mirror * -45;       // turn to center goal.
             drive.pivotToAngle( setHeading );
-            drive.driveDistance( -3, true );   // And drive up onto wood.
+            drive.Distance( -3 );   // And drive up onto wood.
             drive.stopAndWait();                      // And we're done.
         }
 
@@ -195,34 +186,24 @@ public class AutoChooChoo4 extends LinearOpMode {
         // Mostly the two sides are a mirror of each other, but the robots are a little different.
 
         // Get to Near the first beacon.
-        drive.driveShortDistance(0.4, false);
+
+        drive.Distance( 0.4 );
         if (teamColorBlue){
-           setHeading = 44; // Point just a bit away from parallel to goal entrance.
+           setHeading = 44;             // Point just a bit away from parallel to goal entrance.
         } else {
-           setHeading = -48; //
+           setHeading = -47;
         }
-        /*
-        drive.arcToAngle( setHeading,false );
-        drive.driveDistance(4.0, false );  // Should endd near the beacon  an angle.
-        drive.arcToAngle( 0, false );   // Get to straight ahead again.
-        drive.stopDrive();
-        waitForGreen();
-        */
         drive.pivotToAngle( setHeading );
-        drive.driveDistance(4.2, true);  // Should ned up near the beaon, line, at an angle.
-        drive.pivotToAngle( 0 );    // Pointed toward perpendicular to line
+        drive.Distance(4.2);            // Should end up near the beaon, line, at an angle.
+        drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line
         //waitForGreen();
-        //driveShortDistance( 0.3); // get closer to line to save time.
-        // waitForGreen();
 
-
-
-        // Find the line, claim the first beacon.
-        drive.driveToLine();
-        if (teamColorBlue){
-            drive.driveShortDistance( 0.1, true);  // Pivots are different for blue.
+                                        ////// FIRST BEACON ////////////
+        drive.driveToLine();            // Find Line
+        if (teamColorBlue){             // compensate for sensot not being over pivot point.
+            drive.Distance( 0.1);
         }else {
-            drive.driveShortDistance( 0.1, true);  // Light sensor ahead of pivot point; therefore, drive forward.
+            drive.Distance( 0.1 );      //
         }
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
@@ -230,28 +211,27 @@ public class AutoChooChoo4 extends LinearOpMode {
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
         drive.driveToColor( true);
         // waitForGreen();
-        senseBeaconAndClaim(); // claim that beacon
-        drive.driveShortDistance( - 0.1, true );
-        drive.slowPivot( setHeading);              // straight away from the beacon.
-        // drive.pivotToAngle( setHeading );      // straight away from the beacon.
-        // waitForGreen();
-        drive.driveFromRange( 20, setHeading );    // Now back away from beacon.
+        senseBeaconAndClaim();              // claim that beacon
+        drive.Distance( - 0.1 );
+        drive.pivotToAngle(setHeading);     // straight away from the beacon.
+       // waitForGreen();
+        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
         // waitForGreen();
         // Here where we would shoot into the goal if we have time.
 
-        // Second set of beacon claiming steps, just like the above.
-        drive.pivotToAngle( 0 );    // Pointed toward perpendicular to line, slightly toward beacon
+                                        //// SECOND BECON
+        drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line, slightly toward beacon
         if (teamColorBlue ) {
-            drive.driveDistance( 3.4, false );           // End up close to the  line, beacon.
+            drive.Distance( 3.4 );      //   End up close to the  line, beacon.
         } else {
-            drive.driveDistance( 3.7, false );           // End up close to the  line, beacon.
+            drive.Distance( 3.7 );           // End up close to the  line, beacon.
         }
         // waitForGreen();
         drive.driveToLine();
         if (teamColorBlue){
-            drive.driveShortDistance( 0.1, true);  // Pivots are different for blue.
+            drive.Distance( 0.1);
         }else {
-            drive.driveShortDistance( 0.1, true);  // Light sensor ahead of pivot point; therefore, drive forward.
+            drive.Distance( 0.1);
         }
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
@@ -260,7 +240,7 @@ public class AutoChooChoo4 extends LinearOpMode {
         drive.driveToColor( true);
         // waitForGreen();
         senseBeaconAndClaim(); // claim that beacon
-        drive.driveShortDistance( - 0.1, true );
+        drive.Distance( - 0.1 );
 
         // Now would be a great time to dash back to a ramp for 5 pts.
         drive.stopAndWait();
