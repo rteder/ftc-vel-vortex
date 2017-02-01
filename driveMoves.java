@@ -240,28 +240,30 @@ public class driveMoves {
         double compensatedFinalAngle = 0;
 
         if (finalAngle > robot.heading) {
-            compensatedFinalAngle = finalAngle - 5;
+            compensatedFinalAngle = finalAngle - 10;
         } else {
-            compensatedFinalAngle = finalAngle + 5;
+            compensatedFinalAngle = finalAngle + 10;
         }
 
-        if (degreesToPivot < 10) {
+        if (degreesToPivot < 12) {
             // Really small pivots just make really slow, no compensation
-            Pivot( finalAngle, 0.1);
+            Pivot( finalAngle, 0.05);
         } else if (degreesToPivot < 35) {
             Pivot( compensatedFinalAngle, 0.1);
+            finalPivot( finalAngle);
             return;
         } else if (degreesToPivot < 60 ){
             // Pivot fast, but stop 20 degrees shy of final angle
             // to allow for inertial.
             if (finalAngle > robot.heading) {
-                goSlowAngle = finalAngle - 20;
+                goSlowAngle = finalAngle - 30;
             } else {
-                goSlowAngle = finalAngle + 20;
+                goSlowAngle = finalAngle + 30;
             }
             Pivot( goSlowAngle, 0.3);
             // Now pivot slow the rest of the way.
-            Pivot( compensatedFinalAngle, 0.1);
+            Pivot( compensatedFinalAngle, 0.07);
+            finalPivot( finalAngle);
         } else {
             // Pivot fast, but stop well shy of final angle
             // to allow for inertial.
@@ -272,9 +274,21 @@ public class driveMoves {
             }
             Pivot( goSlowAngle, 0.3);
             // Now pivot slow the rest of the way.
-            Pivot( compensatedFinalAngle, 0.1);
+            Pivot( compensatedFinalAngle, 0.07);
+            finalPivot( finalAngle);
+
         }
         stopDrive();
+    }
+
+    public void finalPivot( double finalAngle )throws InterruptedException {
+        while( robot.spinning ) {
+            robot.updateSensors();
+            stopDrive();
+        }
+        Pivot( finalAngle, .05 );
+        stopDrive();
+
     }
 
     // Pivot, used by other routines.

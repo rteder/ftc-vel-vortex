@@ -43,7 +43,7 @@ public class AutoChooChoo extends LinearOpMode {
     // Sense which side of the beacon is our color and then claim it.
     // Complete this routine in the same orientation in which we started.
     public void senseBeaconAndClaim() throws InterruptedException {
-        double claimAngle = 7;
+        double claimAngle = 5;
 
         // First pivot so we are trying to press the right button.
         switch (isRightBlue() ){
@@ -158,6 +158,7 @@ public class AutoChooChoo extends LinearOpMode {
         */
 
         /*
+        waitForGreen();
         drive.pivotToAngle( 90 );
         waitForGreen();
         drive.pivotToAngle( 0 );

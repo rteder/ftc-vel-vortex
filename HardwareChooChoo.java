@@ -6,14 +6,11 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import static android.R.attr.id;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot.MID_SERVO;
 
 /**
  * This is NOT an opmode.  A class to define the hardware.
@@ -34,6 +31,7 @@ public class HardwareChooChoo
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
 
+
     // Properties that correspond to values of the hardware.
     public double harvesterPower = 0;
     public double shooterPower = 0 ;
@@ -41,6 +39,10 @@ public class HardwareChooChoo
     public double total_distance_feet = 0;
     int heading_angle_counts = 0;
     public double heading = 0;
+    public double prevHeading = 0;
+    public double angularVel = 0;
+    public double angularSpeed = 0;
+    public boolean spinning = false;
     double setHeading; // desired heading.
     public double range = 0;
     public double light = 0;
@@ -51,6 +53,8 @@ public class HardwareChooChoo
     public boolean showSensors = false;
 
     private ElapsedTime sampleTimer = new ElapsedTime();
+    private ElapsedTime sampleTimer2 = new ElapsedTime();
+
 
 
     // Scaling for distance conversions.
@@ -122,7 +126,6 @@ public class HardwareChooChoo
     }
     // Update the sensors and display telemetry.
     void updateSensors()throws InterruptedException {
-        String cockedStatus = "WINDING";
         String colorStatus = "";
 
         // Add the two encoder values to get the current position in counts.
@@ -133,6 +136,7 @@ public class HardwareChooChoo
         // Heading from the gyro is 0 to 360, but we convert it to the range of -180 to + 180:
         heading = (double) gyro.getHeading();
         if (heading > 180.0 ) heading = heading - 360.0;
+        getAngularSpeed();
 
         range = ultrasonicSensor.getUltrasonicLevel();
 
@@ -147,7 +151,12 @@ public class HardwareChooChoo
             colorStatus = String.format("Color R %d B %d ", right_color.red(), right_color.blue() );
             opMode.telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
                     + " Light: " + String.format("%.2f", light) + " Avg:"+ String.format("%.2f", avgLight ) );
+
         }
+
+        opMode.telemetry.addData( "AngSpeed", angularSpeed);
+        opMode.telemetry.addData("spin", spinning);
+        opMode.telemetry.update();
 
         if (showDistance || showSensors )opMode.telemetry.update();
         opMode.idle();
@@ -175,6 +184,15 @@ public class HardwareChooChoo
     }
 
 
+    void getAngularSpeed( )throws InterruptedException  {
+        if (sampleTimer2.milliseconds() > 200 ) {
+            sampleTimer2.reset();
+            angularVel = heading - prevHeading;
+            angularSpeed = Math.abs(angularVel);
+            spinning = angularSpeed >= 1;
+            prevHeading = heading;
+        }
+    }
 
 
     /***
