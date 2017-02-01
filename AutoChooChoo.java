@@ -6,12 +6,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="AutoChooChoo4", group="TekC")
+@Autonomous(name="AutoChooChoo", group="TekC")
 //@Disabled
 
-public class AutoChooChoo4 extends LinearOpMode {
+public class AutoChooChoo extends LinearOpMode {
     HardwareChooChoo robot;
-    driveMoves2 drive;
+    driveMoves drive;
 
     // These are global to the class because they are the state of the robot.
     double setHeading; // desired heading.
@@ -95,7 +95,7 @@ public class AutoChooChoo4 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         robot = new HardwareChooChoo( this );
-        drive = new driveMoves2( this, robot );
+        drive = new driveMoves( this, robot );
         robot.init( this.hardwareMap, true );
         robot.showSensors = true;
 
@@ -157,12 +157,12 @@ public class AutoChooChoo4 extends LinearOpMode {
         waitForGreen();
         */
 
-
+        /*
         drive.pivotToAngle( 90 );
         waitForGreen();
         drive.pivotToAngle( 0 );
         waitForGreen();
-
+        */
 
         /////////////////////  AUTONOMOUS CODE TO MOVE THE BALL ////////////////
         // Mission: Move ball

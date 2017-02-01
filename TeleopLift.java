@@ -58,7 +58,7 @@ import static android.R.attr.right;
  */
 
 @TeleOp(name="Lift", group="Tekceratops")
-//@Disabled
+@Disabled
 public class TeleopLift extends OpMode{
     public DcMotor  leftMotor   = null;
     public DcMotor  rightMotor  = null;

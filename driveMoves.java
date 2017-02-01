@@ -4,11 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.HardwareChooChoo;
+
 /**
  * Methods used to drive the robot in Autonomous.
  */
 
-public class driveMoves2 {
+public class driveMoves {
     LinearOpMode opMode; // Allows us to use stuff from the calling linear opMode objec.
     HardwareChooChoo robot; // Allow us to use the robot hardware as an object.
 
@@ -17,7 +19,7 @@ public class driveMoves2 {
 
     // This is the contructor, called when the object is created.
     // You need to pass it the opMode (that is, AutoChooChoo) as well as the configuration.
-    public driveMoves2(LinearOpMode opMode, HardwareChooChoo arobot ) throws InterruptedException{
+    public driveMoves(LinearOpMode opMode, HardwareChooChoo arobot ) throws InterruptedException{
         this.opMode = opMode;
         this.robot = arobot;
     }

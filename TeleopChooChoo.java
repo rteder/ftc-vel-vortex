@@ -45,9 +45,9 @@ import com.qualcomm.robotcore.util.Range;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-@TeleOp(name="ChooChoo1", group="Tekceratops")
+@TeleOp(name="ChooChoo", group="Tekceratops")
 //@Disabled
-public class TeleopChooChoo1 extends OpMode{
+public class TeleopChooChoo extends OpMode{
     // Objects that correspond to hardware devices.
     DcMotor  leftMotor   = null;
     DcMotor  rightMotor  = null;
