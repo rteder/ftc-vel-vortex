@@ -235,6 +235,11 @@ public class TeleopChooChoo1 extends OpMode{
         // Right trigger shoots, right bumper cocks.
         // Use encoder to determine it it is in cocked position.
 
+        // This angle sets where the shooter should nominally be cocked.
+        // If it cannot quite get to cock, this is too low.
+        // if it just keeps running, this is too high:
+        float cockedAngle = 290;
+
         shooterEncoder = shooterMotor.getCurrentPosition();
         int encMod = shooterEncoder % shooterCountsPerRev;
         shooterAngle = 360 * (double) encMod / (double) shooterCountsPerRev;
@@ -251,26 +256,29 @@ public class TeleopChooChoo1 extends OpMode{
             // If we are trying to cock, run the motor if it is not there.
             if (tryToCock) {
                 // If we are less than the desired cocked angle, run shooter at full power.
-                if (shooterAngle < 210) {
+                if (shooterAngle < cockedAngle - 100 ) {
                     shooterPower = 0.20;   // 0 - 210
                     telemetry.addData("cocking", 0);
                     // To prevent motor burn out, limit to this much time.
-                    if (shooterTimer.milliseconds() > 2000) {
+                    if (shooterTimer.milliseconds() > 5000) {
                         shooterPower = 0;
                         tryToCock = false;
                     }
 
-                } else if (shooterAngle < 250) {
+                } else if (shooterAngle < cockedAngle - 55) {
                     shooterPower = 0.1;   // 210- 250
-                } else if (shooterAngle < 280) {
+                } else if (shooterAngle < cockedAngle - 30) {
                     shooterPower = 0.05; // 250 - 280
-                } else if (shooterAngle < 320) {
-                    shooterPower = 0; // 280 - 320  The cocked range
-                } else if (shooterAngle < 350) {
+                } else if (shooterAngle < cockedAngle - 10) {
+                    shooterPower = 0.01; // 280 - 320
+                } else if (shooterAngle < cockedAngle + 15) {
+                    shooterPower = 0.0;
+                }else if (shooterAngle < cockedAngle + 30) {
                     shooterPower = -0.01; // 300 - 350  too far, see if we can creep back
                 } else {
+                    // Past where we can cock, run around to next.
                     shooterPower = 0.20; //350 - 360
-                    telemetry.addData("past", 0);
+                    //telemetry.addData("past", 0);
                 }
             }
             else {
@@ -295,10 +303,10 @@ public class TeleopChooChoo1 extends OpMode{
         //telemetry.addData("left", String.format("%.2f", left) + "  right: " + String.format("%.2f", right)
         //        + " harv" + String.format("%.2f", harvesterPower));
 
-        //telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
-        //telemetry.addData("shooter Angle", String.format("%.1f", shooterAngle));
-        telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
-        telemetry.addData("Harvester Power", String.format("%.2f", harvesterPower));
+        telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
+        telemetry.addData("shooter Angle", String.format("%.1f", shooterAngle));
+        //telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
+        //telemetry.addData("Harvester Power", String.format("%.2f", harvesterPower));
         // colorStatus = String.format("Left R %d B %d ", left_color.red(), left_color.blue() );
         // telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
         // + " Light: " + String.format("%.2f", light));
