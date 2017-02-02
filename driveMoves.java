@@ -229,58 +229,46 @@ public class driveMoves {
 
     //////////////////////   TURNS ///////////////////////////////////////////////////////////////////
     // Pivot to a given angle, referenced to the starting angle.
-    // We make pivots less fast than straight line moves, for precision.
-    // But if you want real precision, execute this twice in a row.
-
-
-    public void pivotToAngle(double finalAngle) throws InterruptedException {
+     public void pivotToAngle(double finalAngle) throws InterruptedException {
         double degreesToPivot = Math.abs(robot.heading -finalAngle);
         desiredHeading = finalAngle;
-        double goSlowAngle = 0;
-        double compensatedFinalAngle = 0;
-
+        boolean posTurn;
+        double turnSign = 1.00;
+        double gotGoingFast = 0;
+        double breakAngle = 0;
         if (finalAngle > robot.heading) {
-            compensatedFinalAngle = finalAngle - 10;
+            posTurn = true;
+            turnSign = 1.00;
         } else {
-            compensatedFinalAngle = finalAngle + 10;
+            posTurn = false;
+            turnSign = -1.00;
         }
 
-        if (degreesToPivot < 12) {
-            // Really small pivots just make really slow, no compensation
-            Pivot( finalAngle, 0.05);
-        } else if (degreesToPivot < 35) {
-            Pivot( compensatedFinalAngle, 0.1);
-            finalPivot( finalAngle);
-            return;
-        } else if (degreesToPivot < 60 ){
-            // Pivot fast, but stop 20 degrees shy of final angle
-            // to allow for inertial.
-            if (finalAngle > robot.heading) {
-                goSlowAngle = finalAngle - 30;
-            } else {
-                goSlowAngle = finalAngle + 30;
-            }
-            Pivot( goSlowAngle, 0.3);
-            // Now pivot slow the rest of the way.
-            Pivot( compensatedFinalAngle, 0.07);
-            finalPivot( finalAngle);
-        } else {
-            // Pivot fast, but stop well shy of final angle
-            // to allow for inertial.
-            if (finalAngle > robot.heading) {
-                goSlowAngle = finalAngle - 40;
-            } else {
-                goSlowAngle = finalAngle + 40;
-            }
-            Pivot( goSlowAngle, 0.3);
-            // Now pivot slow the rest of the way.
-            Pivot( compensatedFinalAngle, 0.07);
-            finalPivot( finalAngle);
+        double AngleToGo = Math.abs( finalAngle - robot.heading);
 
+        // if we mave more than 35 until final angle, go fast until we are 30 degrees from final angle
+        if ( AngleToGo > 35) {
+            breakAngle = finalAngle - (turnSign * 30);
+            Pivot( breakAngle, 0.2);
+            gotGoingFast = 1.00;
         }
+
+        // if we have more than 15 degrees to go, medium until 10 degrees to final angle
+        if ( AngleToGo > 15) {
+            breakAngle = finalAngle - (turnSign * 10);
+            Pivot( breakAngle, 0.08);
+            gotGoingFast = 1.00;
+        }
+
+        // We must now be faily close.
+        // Go slow, but set the breakAngle a degree from the final angle,
+         // or and extra two degrees if we got going fast.
+        breakAngle = finalAngle - (turnSign * (1 + 2 * gotGoingFast));
+        Pivot( breakAngle, 0.05);
         stopDrive();
     }
 
+    // use ths if you want to get a really precise but slow final pivot.
     public void finalPivot( double finalAngle )throws InterruptedException {
         while( robot.spinning ) {
             robot.updateSensors();
