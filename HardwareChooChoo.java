@@ -154,11 +154,11 @@ public class HardwareChooChoo
 
         }
 
-        opMode.telemetry.addData( "AngSpeed", angularSpeed);
-        opMode.telemetry.addData("spin", spinning);
+        //opMode.telemetry.addData( "AngSpeed", angularSpeed);
+        //opMode.telemetry.addData("spin", spinning);
+        opMode.telemetry.addData("heading", heading );
         opMode.telemetry.update();
 
-        if (showDistance || showSensors )opMode.telemetry.update();
         opMode.idle();
     }
 
