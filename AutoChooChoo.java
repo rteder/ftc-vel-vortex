@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    boolean enabableStops = false; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -229,14 +229,17 @@ public class AutoChooChoo extends LinearOpMode {
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
         // waitForGreen();
-        drive.driveToRange( 10, false);   // Get as close as ultrasonic sensor will sense reliably
+        drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
+        //waitForGreen();
+        drive.Distance(0.1);                // Plus a litte closer
+        waitForGreen();
         drive.driveToColor( true);
-        // waitForGreen();
+        waitForGreen();
         senseBeaconAndClaim();              // claim that beacon
-        drive.Distance( - 0.1 );
+        //drive.Distance( - 0.1 );
         drive.pivotToAngle(setHeading);     // straight away from the beacon.
        // waitForGreen();
-        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
+        drive.driveFromRange( 30, setHeading );    // Now back away from beacon.
         // waitForGreen();
         // Here where we would shoot into the goal if we have time.
 
@@ -258,10 +261,12 @@ public class AutoChooChoo extends LinearOpMode {
         drive.pivotToAngle( setHeading );  // Point to beacon
         // waitForGreen();
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
+        drive.Distance(0.1);
+        waitForGreen();
         drive.driveToColor( true);
-        // waitForGreen();
+        waitForGreen();
         senseBeaconAndClaim(); // claim that beacon
-        drive.Distance( - 0.1 );
+        //drive.Distance( - 0.1 );
 
         // Now would be a great time to dash back to a ramp for 5 pts.
         drive.stopAndWait();
