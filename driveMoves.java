@@ -216,7 +216,10 @@ public class driveMoves {
         while (true) {
             AtHeading( motorPower );
             robot.updateSensors();
-            if (robot.right_color.red() + robot.right_color.blue() > 3) break;
+            // Requires one color to be at least two more than the other:
+            if ((robot.right_color.red() + robot.right_color.blue() > 3) &&
+                (Math.abs(robot.right_color.red() - robot.right_color.blue()) >=2))
+                break;
             // If this takes more than five seconds some thing is horribly wrong.  Stop.
             if (accelTimer.milliseconds() > 5000) {
                 stopAndWait();
