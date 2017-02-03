@@ -261,21 +261,25 @@ public class driveMoves {
         }
 
         // We must now be faily close.
-        // Go slow, but set the breakAngle a degree from the final angle,
+        // Go slow, but set the breakAngle two decrees from the final angle,
          // or and extra two degrees if we got going fast.
-        breakAngle = finalAngle - (turnSign * (1 + 2 * gotGoingFast));
+        breakAngle = finalAngle - (turnSign * (2 + 2 * gotGoingFast));
         Pivot( breakAngle, 0.05);
         stopDrive();
+        // pivotIfNeeded( finalAngle);
     }
 
-    // use ths if you want to get a really precise but slow final pivot.
-    public void finalPivot( double finalAngle )throws InterruptedException {
+    // Use this to fix it if is too far off.  If it's within 2 degrees do nothing.
+    public void pivotIfNeeded( double finalAngle )throws InterruptedException {
+        // Wait for it to stop.
         while( robot.spinning ) {
             robot.updateSensors();
             stopDrive();
         }
-        Pivot( finalAngle, .05 );
-        stopDrive();
+        if (Math.abs(robot.heading - finalAngle) > 2.5) {
+            Pivot(finalAngle, .05);
+            stopDrive();
+        }
 
     }
 

@@ -66,7 +66,7 @@ public class AutoChooChoo extends LinearOpMode {
         }
 
         // Drive forward to claim the beacon, and then back off.
-        drive.ForTime( 600, 0.3);
+        drive.ForTime( 600, 0.2);
         drive.ForTime( 300, -0.3);
     }
 
@@ -160,16 +160,30 @@ public class AutoChooChoo extends LinearOpMode {
         /*
         waitForGreen();
         drive.pivotToAngle( 90 );
-        //waitForGreen();
+        waitForGreen();
         drive.pivotToAngle( 0 );
-        //waitForGreen();
-        drive.pivotToAngle( -90 );
-        //waitForGreen();
+        waitForGreen();
+        drive.pivotToAngle( 90 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 45 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 45 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 10 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 10 );
+        waitForGreen();
         drive.pivotToAngle( 0 );
         waitForGreen();
         */
-
-
 
         /////////////////////  AUTONOMOUS CODE TO MOVE THE BALL ////////////////
         // Mission: Move ball
@@ -215,7 +229,7 @@ public class AutoChooChoo extends LinearOpMode {
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
         // waitForGreen();
-        drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
+        drive.driveToRange( 10, false);   // Get as close as ultrasonic sensor will sense reliably
         drive.driveToColor( true);
         // waitForGreen();
         senseBeaconAndClaim();              // claim that beacon
