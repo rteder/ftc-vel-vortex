@@ -66,7 +66,7 @@ public class AutoChooChoo extends LinearOpMode {
         }
 
         // Drive forward to claim the beacon, and then back off.
-        drive.ForTime( 600, 0.2);
+        drive.ForTime( 700, 0.2);
         drive.ForTime( 300, -0.3);
     }
 
@@ -185,6 +185,9 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         */
 
+        // drive.driveToColor();
+        // waitForGreen();
+
         /////////////////////  AUTONOMOUS CODE TO MOVE THE BALL ////////////////
         // Mission: Move ball
         // Be able to execute this simple mission if needed.
@@ -233,7 +236,7 @@ public class AutoChooChoo extends LinearOpMode {
         //waitForGreen();
         drive.Distance(0.1);                // Plus a litte closer
         waitForGreen();
-        drive.driveToColor( true);
+        drive.driveToColor( );
         waitForGreen();
         senseBeaconAndClaim();              // claim that beacon
         //drive.Distance( - 0.1 );
@@ -263,7 +266,7 @@ public class AutoChooChoo extends LinearOpMode {
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
         drive.Distance(0.1);
         waitForGreen();
-        drive.driveToColor( true);
+        drive.driveToColor( );
         waitForGreen();
         senseBeaconAndClaim(); // claim that beacon
         //drive.Distance( - 0.1 );

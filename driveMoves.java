@@ -206,26 +206,23 @@ public class driveMoves {
     }
 
     // Drive until the color sensor has a valid reading.
-    public boolean driveToColor( boolean finalStop )throws InterruptedException {
+    public boolean driveToColor( )throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        double motorPower = 0.1;  // Really slow!
-        // Drive as long as we are are outside a range.
-        // The sensor will sometimes say a range of zero, which is not valid.
-        // So also keep driving if we do not have a valid range reading.
-        while (true) {
+        double motorPower = 0.05;  // Really slow!
+           while (true) {
             AtHeading( motorPower );
             robot.updateSensors();
             // Requires one color to be at least two more than the other:
             if ((robot.right_color.red() + robot.right_color.blue() > 3) &&
                 (Math.abs(robot.right_color.red() - robot.right_color.blue()) >=2))
                 break;
-            // If this takes more than five seconds some thing is horribly wrong.  Stop.
-            if (accelTimer.milliseconds() > 5000) {
+            // If this takes more than two seconds we missed it. Stop.
+            if (accelTimer.milliseconds() > 2000) {
                 stopAndWait();
             }
         }
-        if (finalStop ) stopDrive();
+        stopDrive();
         return true;
     }
 
