@@ -54,6 +54,7 @@ public class HardwareChooChoo
 
     private ElapsedTime sampleTimer = new ElapsedTime();
     private ElapsedTime sampleTimer2 = new ElapsedTime();
+    private ElapsedTime loopTimer = new ElapsedTime();
 
 
 
@@ -156,7 +157,11 @@ public class HardwareChooChoo
 
         //opMode.telemetry.addData( "AngSpeed", angularSpeed);
         //opMode.telemetry.addData("spin", spinning);
-        opMode.telemetry.addData("heading", heading );
+        // opMode.telemetry.addData("heading", heading );
+        // opMode.telemetry.update();
+
+        opMode.telemetry.addData("loop time mS", loopTimer.milliseconds());
+        loopTimer.reset();
         opMode.telemetry.update();
 
         opMode.idle();
