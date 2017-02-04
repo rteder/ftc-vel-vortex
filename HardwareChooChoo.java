@@ -106,8 +106,9 @@ public class HardwareChooChoo
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
         //harvooterMotor.setDirection( DcMotor.Direction.REVERSE);
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
-        // Positive means we are winding the spring.
-        //shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
+        shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setZeroPowerBehavior(BRAKE);
         cockedTouchSensor = hardwareMap.touchSensor.get("cocked_ts");
         right_color = hardwareMap.colorSensor.get("left_color");
         gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
@@ -148,9 +149,9 @@ public class HardwareChooChoo
 
         readLight();
 
-        // Read the shooter angle
+        // Read the shooter angle, but not modulus calculations.
         shooterEncoder = shooterMotor.getCurrentPosition();
-        int encMod = shooterEncoder % shooterCountsPerRev;
+        int encMod = shooterEncoder; //  % shooterCountsPerRev;
         shooterAngle = 360 * (double) encMod / (double) shooterCountsPerRev;
 
 
@@ -170,6 +171,7 @@ public class HardwareChooChoo
         //opMode.telemetry.addData("spin", spinning);
         // opMode.telemetry.addData("heading", heading );
         // opMode.telemetry.update();
+        opMode.telemetry.addData("Shooter Angle", shooterAngle);
 
         opMode.telemetry.addData("loop time mS", loopTimer.milliseconds());
         loopTimer.reset();
