@@ -35,6 +35,12 @@ public class HardwareChooChoo
     // Properties that correspond to values of the hardware.
     public double harvesterPower = 0;
     public double shooterPower = 0 ;
+    int shooterEncoder = 0;
+    double shooterAngle = 0;
+    int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
+
+
+
     public int total_distance_counts = 0;
     public double total_distance_feet = 0;
     int heading_angle_counts = 0;
@@ -43,7 +49,6 @@ public class HardwareChooChoo
     public double angularVel = 0;
     public double angularSpeed = 0;
     public boolean spinning = false;
-    double setHeading; // desired heading.
     public double range = 0;
     public double light = 0;
     double[] lightReadings = { 0 , 0, 0, 0, 0, 0, 0};
@@ -142,6 +147,12 @@ public class HardwareChooChoo
         range = ultrasonicSensor.getUltrasonicLevel();
 
         readLight();
+
+        // Read the shooter angle
+        shooterEncoder = shooterMotor.getCurrentPosition();
+        int encMod = shooterEncoder % shooterCountsPerRev;
+        shooterAngle = 360 * (double) encMod / (double) shooterCountsPerRev;
+
 
         // If any of the flags are set, show data on telemetry.
         if (showDistance) {

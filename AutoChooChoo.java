@@ -69,7 +69,9 @@ public class AutoChooChoo extends LinearOpMode {
         drive.ForTime( 700, 0.2);
         drive.ForTime( 300, -0.3);
     }
+    public void shootTheBall() throws InterruptedException{
 
+    }
     // Color sorting utility, for beacon claiming.
     // Return:
     // 0 if we detect no color
