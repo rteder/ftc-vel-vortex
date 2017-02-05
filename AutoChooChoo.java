@@ -69,20 +69,31 @@ public class AutoChooChoo extends LinearOpMode {
         drive.ForTime( 700, 0.2);
         drive.ForTime( 300, -0.3);
     }
+
+    ///////////////////////  SHOOT BALL /////////////////////////////////////
     public void shootTheBall() throws InterruptedException {
-        // Rotate shooter just shy of one revolution.
-        while(robot.shooterAngle <= 360){
+        // Rotate shooter enought to fire ball.
+        while(robot.shooterAngle <= 250){
             robot.updateSensors();
             robot.shooterMotor.setPower(0.5);
         }
 
-        // Back up until you are at one complete revolution
-        while(robot.shooterAngle > 360 ){
+        // Be sure we have gone at full revolution.
+        // Lower power because it really wants to overshoot.
+        while(robot.shooterAngle <= 340){
             robot.updateSensors();
-            robot.shooterMotor.setPower( -0.1 );
+            robot.shooterMotor.setPower(0.1);
         }
 
-        while(robot.shooterAngle < 360 ) {
+        // Back up until you are at one complete revolution
+        while(robot.shooterAngle > 340 ){
+            robot.updateSensors();
+            robot.shooterMotor.setPower( -0.2 );
+        }
+
+        // Now run forward until just shy of a revolution.
+        // It overshoots on average 10 degrees so we compensate.
+        while(robot.shooterAngle < 350 ) {
             robot.updateSensors();
             robot.shooterMotor.setPower(0.05);
         }
@@ -166,9 +177,9 @@ public class AutoChooChoo extends LinearOpMode {
 
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
-        // Use this to estimate overshoot of 90 deg pivot.
-        //shootTheBall();
-        //waitForGreen();
+
+        // shootTheBall();
+        // waitForGreen();
         /*
         drive.Distance( 0.6);
         waitForGreen();
@@ -256,8 +267,8 @@ public class AutoChooChoo extends LinearOpMode {
         // waitForGreen();
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
         //waitForGreen();
-        drive.Distance(0.1);                // Plus a litte closer
-        waitForGreen();
+        drive.Distance(0.1);                // Plus a litte closer.  Should be good enough to claim.
+        // waitForGreen();
         drive.driveToColor( );
         waitForGreen();
         senseBeaconAndClaim();              // claim that beacon

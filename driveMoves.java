@@ -71,14 +71,15 @@ public class driveMoves {
             stopDrive();
             return;
         } else {
+            // Mover of greater than 3 feet:
             // First half foot at 0.4
             ToTargetDistance(shiftPoint, 0.4);
 
-            // Now run at 0.6 until 2 feet out
-            ToTargetDistance(decelPoint1, 0.6);
+            // Now run at 0.5 until 2 feet out
+            ToTargetDistance(decelPoint1, 0.5);
 
-            // Now run at 0.4 until a foot away
-            ToTargetDistance(decelPoint2, 0.4);
+            // Now run at 0.3 until a foot away
+            ToTargetDistance(decelPoint2, 0.3);
 
             // And come in slow for final foot.
             ToTargetDistance(target, 0.2);
