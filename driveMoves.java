@@ -155,7 +155,7 @@ public class driveMoves {
             robot.rightMotor.setPower(motorPower);
             robot.updateSensors();
             // Look for an increase in light above the average.
-            if (robot.light > robot.avgLight + 0.1){
+            if (robot.light > robot.avgLight + 0.07){
                 break;
             }
             // If this takes more than five seconds some thing is horribly wrong.  Stop.
@@ -218,8 +218,9 @@ public class driveMoves {
             if ((robot.right_color.red() + robot.right_color.blue() > 3) &&
                 (Math.abs(robot.right_color.red() - robot.right_color.blue()) >=2))
                 break;
-            // If this takes more than two seconds we missed it. Stop.
-            if (accelTimer.milliseconds() > 2000) {
+            // If this takes more than a short time we missed it. Stop.
+           // This is critical.  If this is too long we claim a random beacon.
+            if (accelTimer.milliseconds() > 1200) {
                 stopAndWait();
             }
         }
