@@ -35,6 +35,12 @@ public class HardwareChooChoo
     // Properties that correspond to values of the hardware.
     public double harvesterPower = 0;
     public double shooterPower = 0 ;
+    int shooterEncoder = 0;
+    double shooterAngle = 0;
+    int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
+
+
+
     public int total_distance_counts = 0;
     public double total_distance_feet = 0;
     int heading_angle_counts = 0;
@@ -43,7 +49,6 @@ public class HardwareChooChoo
     public double angularVel = 0;
     public double angularSpeed = 0;
     public boolean spinning = false;
-    double setHeading; // desired heading.
     public double range = 0;
     public double light = 0;
     double[] lightReadings = { 0 , 0, 0, 0, 0, 0, 0};
@@ -54,6 +59,7 @@ public class HardwareChooChoo
 
     private ElapsedTime sampleTimer = new ElapsedTime();
     private ElapsedTime sampleTimer2 = new ElapsedTime();
+    private ElapsedTime loopTimer = new ElapsedTime();
 
 
 
@@ -100,8 +106,9 @@ public class HardwareChooChoo
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
         //harvooterMotor.setDirection( DcMotor.Direction.REVERSE);
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
-        // Positive means we are winding the spring.
-        //shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
+        shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setZeroPowerBehavior(BRAKE);
         cockedTouchSensor = hardwareMap.touchSensor.get("cocked_ts");
         right_color = hardwareMap.colorSensor.get("left_color");
         gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
@@ -142,6 +149,12 @@ public class HardwareChooChoo
 
         readLight();
 
+        // Read the shooter angle, but not modulus calculations.
+        shooterEncoder = shooterMotor.getCurrentPosition();
+        int encMod = shooterEncoder; //  % shooterCountsPerRev;
+        shooterAngle = 360 * (double) encMod / (double) shooterCountsPerRev;
+
+
         // If any of the flags are set, show data on telemetry.
         if (showDistance) {
            opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
@@ -156,7 +169,12 @@ public class HardwareChooChoo
 
         //opMode.telemetry.addData( "AngSpeed", angularSpeed);
         //opMode.telemetry.addData("spin", spinning);
-        opMode.telemetry.addData("heading", heading );
+        // opMode.telemetry.addData("heading", heading );
+        // opMode.telemetry.update();
+        opMode.telemetry.addData("Shooter Angle", shooterAngle);
+
+        opMode.telemetry.addData("loop time mS", loopTimer.milliseconds());
+        loopTimer.reset();
         opMode.telemetry.update();
 
         opMode.idle();

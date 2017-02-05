@@ -62,6 +62,7 @@ public class TeleopChooChoo extends OpMode{
 
     // Global variables.
     private ElapsedTime shooterTimer = new ElapsedTime();
+    private ElapsedTime loopTimer = new ElapsedTime();
     int shooterEncoder = 0;
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
     int harvesterEncoder = 0;
@@ -258,7 +259,7 @@ public class TeleopChooChoo extends OpMode{
                 // If we are less than the desired cocked angle, run shooter at full power.
                 if (shooterAngle < cockedAngle - 100 ) {
                     shooterPower = 0.20;   // 0 - 210
-                    telemetry.addData("cocking", 0);
+                    // telemetry.addData("cocking", 0);
                     // To prevent motor burn out, limit to this much time.
                     if (shooterTimer.milliseconds() > 5000) {
                         shooterPower = 0;
@@ -312,6 +313,9 @@ public class TeleopChooChoo extends OpMode{
         // + " Light: " + String.format("%.2f", light));
         // updateTelemetry(telemetry);
 
+        telemetry.addData("loop time mS", loopTimer.milliseconds());
+        loopTimer.reset();
+        telemetry.update();
     }
 
     /*

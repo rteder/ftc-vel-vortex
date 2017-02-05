@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -69,6 +69,27 @@ public class AutoChooChoo extends LinearOpMode {
         drive.ForTime( 700, 0.2);
         drive.ForTime( 300, -0.3);
     }
+    public void shootTheBall() throws InterruptedException {
+        // Rotate shooter just shy of one revolution.
+        while(robot.shooterAngle <= 360){
+            robot.updateSensors();
+            robot.shooterMotor.setPower(0.5);
+        }
+
+        // Back up until you are at one complete revolution
+        while(robot.shooterAngle > 360 ){
+            robot.updateSensors();
+            robot.shooterMotor.setPower( -0.1 );
+        }
+
+        while(robot.shooterAngle < 360 ) {
+            robot.updateSensors();
+            robot.shooterMotor.setPower(0.05);
+        }
+        // Stop!
+        robot.shooterMotor.setPower( 0.0 );
+    }
+
 
     // Color sorting utility, for beacon claiming.
     // Return:
@@ -146,7 +167,8 @@ public class AutoChooChoo extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
         // Use this to estimate overshoot of 90 deg pivot.
-
+        //shootTheBall();
+        //waitForGreen();
         /*
         drive.Distance( 0.6);
         waitForGreen();
@@ -241,6 +263,7 @@ public class AutoChooChoo extends LinearOpMode {
         senseBeaconAndClaim();              // claim that beacon
         //drive.Distance( - 0.1 );
         drive.pivotToAngle(setHeading);     // straight away from the beacon.
+        shootTheBall();
        // waitForGreen();
         drive.driveFromRange( 30, setHeading );    // Now back away from beacon.
         // waitForGreen();
