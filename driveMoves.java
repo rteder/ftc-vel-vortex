@@ -57,7 +57,7 @@ public class driveMoves {
 
        double shiftPoint = robot.total_distance_feet + 1;
         double decelPoint1 = target - 2;
-        double decelPoint2 = target - 1;
+        double decelPoint2 = target - 0.5;
 
         if (distanceToGo < 1.0) {
             // Short move (less than a foot) at low power

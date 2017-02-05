@@ -106,6 +106,7 @@ public class HardwareChooChoo
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
         //harvooterMotor.setDirection( DcMotor.Direction.REVERSE);
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
+        shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(BRAKE);
