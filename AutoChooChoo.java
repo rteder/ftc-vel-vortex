@@ -88,7 +88,7 @@ public class AutoChooChoo extends LinearOpMode {
         // Back up until you are at one complete revolution
         while(robot.shooterAngle > 340 ){
             robot.updateSensors();
-            robot.shooterMotor.setPower( -0.2 );
+            robot.shooterMotor.setPower( -0.3 );
         }
 
         // Now run forward until just shy of a revolution.
@@ -246,7 +246,7 @@ public class AutoChooChoo extends LinearOpMode {
 
         drive.Distance( 0.4 );
         if (teamColorBlue){
-           setHeading = 44;             // Point just a bit away from parallel to goal entrance.
+           setHeading = 47;             // Point just a bit away from parallel to goal entrance.
         } else {
            setHeading = -47;
         }
@@ -276,16 +276,16 @@ public class AutoChooChoo extends LinearOpMode {
         drive.pivotToAngle(setHeading);     // straight away from the beacon.
         shootTheBall();
        // waitForGreen();
-        drive.driveFromRange( 30, setHeading );    // Now back away from beacon.
+        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
         // waitForGreen();
         // Here where we would shoot into the goal if we have time.
 
                                         //// SECOND BECON
         drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line, slightly toward beacon
         if (teamColorBlue ) {
-            drive.Distance( 3.4 );      //   End up close to the  line, beacon.
+            drive.Distance( 3.2 );      //   End up close to the  line, beacon.
         } else {
-            drive.Distance( 3.7 );           // End up close to the  line, beacon.
+            drive.Distance( 3.2 );           // End up close to the  line, beacon.
         }
         // waitForGreen();
         drive.driveToLine();
