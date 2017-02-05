@@ -248,16 +248,27 @@ public class driveMoves {
 
         double AngleToGo = Math.abs( finalAngle - robot.heading);
 
+        // Handle small pivots differently.
+        if ( AngleToGo < 15) {
+            // Kick start for 200 mS
+          
+            // Now pivot to two degrees shy of final angle at low power.
+            breakAngle = finalAngle - turnSign * 2;
+            Pivot( breakAngle, 0.05);
+            stopDrive();
+       }
+
+
         // if we mave more than 35 until final angle, go fast until we are 30 degrees from final angle
-        if ( AngleToGo > 35) {
-            breakAngle = finalAngle - (turnSign * 30);
+        if ( AngleToGo > 40) {
+            breakAngle = finalAngle - (turnSign * 35);
             Pivot( breakAngle, 0.2);
             gotGoingFast = 1.00;
         }
 
-        // if we have more than 15 degrees to go, medium until 10 degrees to final angle
-        if ( AngleToGo > 15) {
-            breakAngle = finalAngle - (turnSign * 10);
+        // if we have more than 20 degrees to go, medium until 15 degrees to final angle
+        if ( AngleToGo > 20) {
+            breakAngle = finalAngle - (turnSign * 15);
             Pivot( breakAngle, 0.08);
             gotGoingFast = 1.00;
         }

@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -190,8 +190,7 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         */
 
-        /*
-        waitForGreen();
+         waitForGreen();
         drive.pivotToAngle( 90 );
         waitForGreen();
         drive.pivotToAngle( 0 );
@@ -216,7 +215,6 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         drive.pivotToAngle( 0 );
         waitForGreen();
-        */
 
         // drive.driveToColor();
         // waitForGreen();
