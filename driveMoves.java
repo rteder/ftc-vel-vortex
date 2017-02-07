@@ -248,14 +248,19 @@ public class driveMoves {
 
         double AngleToGo = Math.abs( finalAngle - robot.heading);
 
-        // Handle small pivots differently.
+         // No point ina tiny angle don't waste time.
+         if ( AngleToGo < 2) return;
+
+             // Handle small pivots differently.
         if ( AngleToGo < 15) {
             // Kick start for 200 mS
+            pivotForTime( 400,turnSign, 0.2);
           
             // Now pivot to two degrees shy of final angle at low power.
             breakAngle = finalAngle - turnSign * 2;
             Pivot( breakAngle, 0.05);
             stopDrive();
+            return;
        }
 
 
@@ -325,6 +330,18 @@ public class driveMoves {
         pivotToAngle( finalAngle );
     }
 
+
+
+    public void pivotForTime(double targetMillisconds, double turnSign, double targetPower )throws InterruptedException {
+        robot.updateSensors();
+        accelTimer.reset();
+        while (accelTimer.milliseconds() < targetMillisconds) {
+            robot.leftMotor.setPower(turnSign * targetPower);
+            robot.rightMotor.setPower(-turnSign * targetPower);
+            robot.updateSensors();
+        }
+        stopDrive();
+    }
 
 
 }
