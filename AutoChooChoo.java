@@ -225,13 +225,17 @@ public class AutoChooChoo extends LinearOpMode {
         // Mission: Move ball
         // Be able to execute this simple mission if needed.
         // Drive backwards because our foam pad makes it hard to push the ball
+        // starts robot wheel on second seam in from corner, so robot is mostly
+        // on second tile in.
         if (moveBall){
-            sleep( 10000 );
+            sleep( 9000 );
             drive.desiredHeading = 0;
-            drive.Distance(-2.5 );  // Should end up near center goal.
+            drive.Distance(-1.0 );  // Away from wall.
             setHeading = mirror * -45;       // turn to center goal.
             drive.pivotToAngle( setHeading );
-            drive.Distance( -3 );   // And drive up onto wood.
+            drive.Distance(-0.8 );  //Closer to goal.
+            shootTheBall();
+            drive.Distance( -4 );   // And drive up onto wood.
             drive.stopAndWait();                      // And we're done.
         }
 

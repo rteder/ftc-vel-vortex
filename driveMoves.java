@@ -51,6 +51,7 @@ public class driveMoves {
         // To keep it simple, all backward moves are at low power.
         if (distanceToGo < 0) {
             ToTargetDistance(target, 0.2);
+            stopDrive();
             return;
         }
 
