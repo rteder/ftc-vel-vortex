@@ -54,10 +54,10 @@ public class TeleopChooChoo extends OpMode{
     DcMotor harvesterMotor = null;
     DcMotor shooterMotor = null;
     DcMotor liftMotor = null;
-    ModernRoboticsI2cGyro gyro = null;
-    ColorSensor left_color = null;
-    UltrasonicSensor ultrasonicSensor = null;
-    LightSensor lightSensor = null;
+    //ModernRoboticsI2cGyro gyro = null;
+    //ColorSensor left_color = null;
+    //UltrasonicSensor ultrasonicSensor = null;
+    //LightSensor lightSensor = null;
     Servo manipulator = null;
 
     // Global variables.
@@ -102,10 +102,10 @@ public class TeleopChooChoo extends OpMode{
         shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
 
 
-        left_color = hardwareMap.colorSensor.get("left_color");
-        gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
-        ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
-        lightSensor = hardwareMap.lightSensor.get("light");
+        //left_color = hardwareMap.colorSensor.get("left_color");
+        //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+        //ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
+        //lightSensor = hardwareMap.lightSensor.get("light");
 
 
         // Set motor powers to zero
@@ -117,8 +117,8 @@ public class TeleopChooChoo extends OpMode{
 
 
         // Set the LEDs off in the beginning
-        left_color.enableLed( false );
-        lightSensor.enableLed(true);
+        // left_color.enableLed( false );
+        //lightSensor.enableLed(true);
 
 
         // A deadzone for the joysticks is needed because they don't always
