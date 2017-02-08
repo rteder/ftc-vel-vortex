@@ -55,8 +55,8 @@ public class driveMoves {
         }
 
 
-       double shiftPoint = robot.total_distance_feet + 1;
-        double decelPoint1 = target - 2;
+       double shiftPoint = robot.total_distance_feet + 0.5;
+        double decelPoint1 = target - 1.5;
         double decelPoint2 = target - 0.5;
 
         if (distanceToGo < 1.0) {
@@ -75,13 +75,13 @@ public class driveMoves {
             // First half foot at 0.4
             ToTargetDistance(shiftPoint, 0.4);
 
-            // Now run at 0.5 until 2 feet out
+            // Now run at 0.5 until 1.5 feet out
             ToTargetDistance(decelPoint1, 0.5);
 
-            // Now run at 0.3 until a foot away
+            // Now run at 0.3 until 0.5 feet away
             ToTargetDistance(decelPoint2, 0.3);
 
-            // And come in slow for final foot.
+            // And come in slow for 0.5
             ToTargetDistance(target, 0.2);
             stopDrive();
             return;
