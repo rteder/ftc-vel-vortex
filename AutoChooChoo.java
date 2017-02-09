@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    boolean enabableStops = false; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -178,8 +178,8 @@ public class AutoChooChoo extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
 
-        shootTheBall();
-        waitForGreen();
+        // shootTheBall();
+        // waitForGreen();
 
         /*
         drive.Distance( 0.6);
@@ -279,6 +279,7 @@ public class AutoChooChoo extends LinearOpMode {
         senseBeaconAndClaim();              // claim that beacon
         //drive.Distance( - 0.1 );
         drive.pivotToAngle(setHeading);     // straight away from the beacon.
+        drive.pivotIfNeeded(setHeading);    // Once more for precision.
         shootTheBall();
        // waitForGreen();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.

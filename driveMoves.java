@@ -74,7 +74,7 @@ public class driveMoves {
         } else {
             // Mover of greater than 3 feet:
             // First half foot at 0.4
-            ToTargetDistance(shiftPoint, 0.4);
+            ToTargetDistance(shiftPoint, 0.3);
 
             // Now run at 0.5 until 1.5 feet out
             ToTargetDistance(decelPoint1, 0.5);
@@ -288,14 +288,16 @@ public class driveMoves {
         // pivotIfNeeded( finalAngle);
     }
 
-    // Use this to fix it if is too far off.  If it's within 2 degrees do nothing.
+    // Use this to fix it if is too far off.  If it's within a degree do nothing.
+    // Use for if it needs to be really precise.
     public void pivotIfNeeded( double finalAngle )throws InterruptedException {
         // Wait for it to stop.
         while( robot.spinning ) {
             robot.updateSensors();
             stopDrive();
         }
-        if (Math.abs(robot.heading - finalAngle) > 2.5) {
+        // Now pivot if needed.
+        if (Math.abs(robot.heading - finalAngle) > 1) {
             Pivot(finalAngle, .05);
             stopDrive();
         }

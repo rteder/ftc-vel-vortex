@@ -198,15 +198,15 @@ public class TeleopChooChoo extends OpMode{
         }
         // Makes sure harvester is zeroed.
         if (harvesterRunning == false){
-            if ((harvesterAngle > 165|| (harvesterAngle < 30))){
+            if ((harvesterAngle > 175|| (harvesterAngle < 30))){
                 // Right where we want it!
                 harvesterPower = 0.0;
             } else if (harvesterAngle > 120){
                 // Almost there, go really slow
-                harvesterPower = 0.05;
+                harvesterPower = 0.1;
             } else {
                 // Run until we are closer.
-                harvesterPower = 0.1;
+                harvesterPower = 0.2;
             }
         }
 
@@ -239,7 +239,7 @@ public class TeleopChooChoo extends OpMode{
         // This angle sets where the shooter should nominally be cocked.
         // If it cannot quite get to cock, this is too low.
         // if it just keeps running, this is too high:
-        float cockedAngle = 290;
+        float cockedAngle = 305;
 
         shooterEncoder = shooterMotor.getCurrentPosition();
         int encMod = shooterEncoder % shooterCountsPerRev;
