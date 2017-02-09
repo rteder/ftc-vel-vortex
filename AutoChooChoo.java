@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -93,7 +93,7 @@ public class AutoChooChoo extends LinearOpMode {
 
         // Now run forward until just shy of a revolution.
         // It overshoots on average 10 degrees so we compensate.
-        while(robot.shooterAngle < 350 ) {
+        while(robot.shooterAngle < 357 ) {
             robot.updateSensors();
             robot.shooterMotor.setPower(0.05);
         }
@@ -178,8 +178,9 @@ public class AutoChooChoo extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
 
-        // shootTheBall();
-        // waitForGreen();
+        shootTheBall();
+        waitForGreen();
+
         /*
         drive.Distance( 0.6);
         waitForGreen();

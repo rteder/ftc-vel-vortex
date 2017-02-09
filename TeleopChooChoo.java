@@ -304,16 +304,16 @@ public class TeleopChooChoo extends OpMode{
         //telemetry.addData("left", String.format("%.2f", left) + "  right: " + String.format("%.2f", right)
         //        + " harv" + String.format("%.2f", harvesterPower));
 
-        telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
+        //telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
         telemetry.addData("shooter Angle", String.format("%.1f", shooterAngle));
-        //telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
+        telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
         //telemetry.addData("Harvester Power", String.format("%.2f", harvesterPower));
         // colorStatus = String.format("Left R %d B %d ", left_color.red(), left_color.blue() );
         // telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
         // + " Light: " + String.format("%.2f", light));
         // updateTelemetry(telemetry);
 
-        telemetry.addData("loop time mS", loopTimer.milliseconds());
+        telemetry.addData("loop time mS", String.format("%.1f",loopTimer.milliseconds()));
         loopTimer.reset();
         telemetry.update();
     }
