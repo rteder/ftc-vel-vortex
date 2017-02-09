@@ -32,25 +32,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import android.util.Log;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-@TeleOp(name="ChooChoo", group="Tekceratops")
+@TeleOp(name="ChooChooAlt", group="Tekceratops")
 //@Disabled
-public class TeleopChooChoo extends OpMode{
+public class TeleopChooChooAlt extends LinearOpMode {
     // Objects that correspond to hardware devices.
     DcMotor  leftMotor   = null;
     DcMotor  rightMotor  = null;
+    private ElapsedTime loopTimer = new ElapsedTime();
+
     DcMotor harvesterMotor = null;
     DcMotor shooterMotor = null;
     DcMotor liftMotor = null;
@@ -62,7 +63,6 @@ public class TeleopChooChoo extends OpMode{
 
     // Global variables.
     private ElapsedTime shooterTimer = new ElapsedTime();
-    private ElapsedTime loopTimer = new ElapsedTime();
     int shooterEncoder = 0;
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
     int harvesterEncoder = 0;
@@ -75,11 +75,12 @@ public class TeleopChooChoo extends OpMode{
     boolean tryToCock = false;
     boolean harvesterRunning = false;
 
+    private CachedEncoderMonitor harvesterEncoderMonitor;
+    private CachedEncoderMonitor shooterEncoderMonitor;
 
     // Code to run ONCE when the driver hits INIT.
     // This initializes all of the hardware.
-    @Override
-    public void init() {
+    public void initialize() {
         // Get the hardware map:
         leftMotor = hardwareMap.dcMotor.get("left_drive");
         rightMotor  = hardwareMap.dcMotor.get("right_drive");
@@ -112,6 +113,7 @@ public class TeleopChooChoo extends OpMode{
         leftMotor.setPower( 0 );
         rightMotor.setPower( 0 );
 
+
         // This is giving trouble
          shooterMotor.setPower( 0 );
 
@@ -131,30 +133,18 @@ public class TeleopChooChoo extends OpMode{
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Bot", "ChooChoo");
         updateTelemetry(telemetry);
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
+        harvesterEncoderMonitor = new CachedEncoderMonitor(harvesterMotor);
+        shooterEncoderMonitor = new CachedEncoderMonitor(shooterMotor);
 
-    }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-
-    @Override
-    public void start() {
     }
 
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     ////////////////////////////  MAIN CONTROL LOOP //////////////////////////////////////
-    @Override
-    public void loop() {
+    public void runLoop() {
         double left = 0;
         double right = 0;
         double harvesterPower = 0;
@@ -180,7 +170,7 @@ public class TeleopChooChoo extends OpMode{
         // Left Bumper is un-harvest, full speed.
         // Yellow is harvest slowly to keep balls from coming out.
         // harvesterPower = (double) gamepad2.left_stick_y * -1.0;
-        harvesterEncoder = harvesterMotor.getCurrentPosition();
+        //harvesterEncoder = harvesterEncoderMonitor.getPosition();
         int harvesterEncMod = harvesterEncoder % harvesterCountsPerHalfRev;
         harvesterAngle = 180 * (double) harvesterEncMod / (double) harvesterCountsPerHalfRev;
         // harvesterAngle = Math.abs(harvesterAngle);
@@ -197,7 +187,7 @@ public class TeleopChooChoo extends OpMode{
             harvesterPower = 0.00;
         }
         // Makes sure harvester is zeroed.
-        if (harvesterRunning == false){
+        if (!harvesterRunning){
             if ((harvesterAngle > 165|| (harvesterAngle < 30))){
                 // Right where we want it!
                 harvesterPower = 0.0;
@@ -231,7 +221,6 @@ public class TeleopChooChoo extends OpMode{
             liftMotor.setPower( 0 );
         }
 
-
         ////////////////// Shooter Control ////////////////////////////////////
         // Right trigger shoots, right bumper cocks.
         // Use encoder to determine it it is in cocked position.
@@ -241,7 +230,7 @@ public class TeleopChooChoo extends OpMode{
         // if it just keeps running, this is too high:
         float cockedAngle = 290;
 
-        shooterEncoder = shooterMotor.getCurrentPosition();
+        //shooterEncoder = shooterEncoderMonitor.getPosition();
         int encMod = shooterEncoder % shooterCountsPerRev;
         shooterAngle = 360 * (double) encMod / (double) shooterCountsPerRev;
 
@@ -292,6 +281,7 @@ public class TeleopChooChoo extends OpMode{
         // Comment out the following if you ever need to disable the shooter:
         shooterMotor.setPower( shooterPower );
 
+
         //////////////////////  Telemetry /////////////////////////////////////////
         // Send useful data about the robot status:
         /*
@@ -304,7 +294,8 @@ public class TeleopChooChoo extends OpMode{
         //telemetry.addData("left", String.format("%.2f", left) + "  right: " + String.format("%.2f", right)
         //        + " harv" + String.format("%.2f", harvesterPower));
 
-        telemetry.addData("shooterPower", String.format("%.2f", shooterPower));
+
+        //stelemetry.addData("shooterPower", String.format("%.2f", shooterPower));
         telemetry.addData("shooter Angle", String.format("%.1f", shooterAngle));
         //telemetry.addData("Harvester Angle", String.format("%.2f", harvesterAngle));
         //telemetry.addData("Harvester Power", String.format("%.2f", harvesterPower));
@@ -318,10 +309,15 @@ public class TeleopChooChoo extends OpMode{
         telemetry.update();
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
     @Override
-    public void stop() {
+    public void runOpMode() throws InterruptedException {
+        initialize();
+        waitForStart();
+
+        //shooterEncoderMonitor.start();
+        //harvesterEncoderMonitor.start();
+
+        while(opModeIsActive())
+            runLoop();
     }
 }
