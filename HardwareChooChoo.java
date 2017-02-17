@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -9,6 +11,11 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -26,11 +33,19 @@ public class HardwareChooChoo
     public DcMotor harvesterMotor = null;
     public DcMotor shooterMotor = null;
     public TouchSensor cockedTouchSensor = null;
-    public ModernRoboticsI2cGyro gyro = null;
+    //public ModernRoboticsI2cGyro gyro = null;
     public ColorSensor right_color = null;
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
 
+
+
+    // The IMU sensor object  (Adafruit Gyro)
+    BNO055IMU imu;
+
+    // State used for updating telemetry
+    public Orientation angles;
+    public Acceleration gravity;
 
     // Properties that correspond to values of the hardware.
     public double harvesterPower = 0;
@@ -53,9 +68,6 @@ public class HardwareChooChoo
     public double light = 0;
     double[] lightReadings = { 0 , 0, 0, 0, 0, 0, 0};
     public double avgLight = 0;
-
-    public boolean showDistance = false;
-    public boolean showSensors = false;
 
     private ElapsedTime sampleTimer = new ElapsedTime();
     private ElapsedTime sampleTimer2 = new ElapsedTime();
@@ -112,7 +124,7 @@ public class HardwareChooChoo
         shooterMotor.setZeroPowerBehavior(BRAKE);
         cockedTouchSensor = hardwareMap.touchSensor.get("cocked_ts");
         right_color = hardwareMap.colorSensor.get("left_color");
-        gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+        //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
         ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
         lightSensor = hardwareMap.lightSensor.get("light");
 
@@ -131,6 +143,25 @@ public class HardwareChooChoo
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+        // ADAFRUIT IMU
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
     }
     // Update the sensors and display telemetry.
     void updateSensors()throws InterruptedException {
@@ -141,8 +172,18 @@ public class HardwareChooChoo
         total_distance_counts = leftMotor.getCurrentPosition() + rightMotor.getCurrentPosition();
         total_distance_feet = (double) total_distance_counts / COUNTS_PER_FOOT;
 
+
+
+
+
+
         // Heading from the gyro is 0 to 360, but we convert it to the range of -180 to + 180:
-        heading = (double) gyro.getHeading();
+        //heading = (double) gyro.getHeading();
+        // Read the Adafruit Gyro  (IMU = Inertial Measurement Unit)
+        angles   = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        gravity  = imu.getGravity();
+        // Sign is reversed compared to the MR Gyro we used to use.
+        heading = -angles.firstAngle;
         if (heading > 180.0 ) heading = heading - 360.0;
         getAngularSpeed();
 
@@ -157,16 +198,14 @@ public class HardwareChooChoo
 
 
         // If any of the flags are set, show data on telemetry.
-        if (showDistance) {
-           opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
+        opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
                     "Heading:" + String.format("%.2f", heading ));
-        }
-        if (showSensors) {
-            colorStatus = String.format("Color R %d B %d ", right_color.red(), right_color.blue() );
-            opMode.telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
-                    + " Light: " + String.format("%.2f", light) + " Avg:"+ String.format("%.2f", avgLight ) );
 
-        }
+         //  colorStatus = String.format("Color R %d B %d ", right_color.red(), right_color.blue() );
+         //   opMode.telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
+         //            + " Light: " + String.format("%.2f", light) + " Avg:"+ String.format("%.2f", avgLight ) );
+
+
 
         //opMode.telemetry.addData( "AngSpeed", angularSpeed);
         //opMode.telemetry.addData("spin", spinning);

@@ -17,7 +17,7 @@ public class AutoChooChoo extends LinearOpMode {
     double setHeading; // desired heading.
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -129,20 +129,18 @@ public class AutoChooChoo extends LinearOpMode {
         robot = new HardwareChooChoo( this );
         drive = new driveMoves( this, robot );
         robot.init( this.hardwareMap, true );
-        robot.showSensors = true;
 
         double mirror = 1.0;  // If on the Blue side, many moves are mirrored, and this is set to -1.0
 
         // Calibrate the gyro.
         telemetry.addData(">", "Gyro Calibrating. Do Not move!");
         telemetry.update();
-        robot.gyro.calibrate();
 
-        // Wait for calibration to finish.
-        while (robot.gyro.isCalibrating())  {
-            Thread.sleep(50);
-            idle();
-        }
+        String calmsg = "Gyro status: " + robot.imu.getCalibrationStatus().toString();
+        telemetry.addLine( calmsg );
+        telemetry.update();
+        sleep( 2000 );
+
 
         // Select a team by pressing either the red or the blue buttons.
         // Also, you can make the mission to be moving the ball instead
@@ -179,7 +177,7 @@ public class AutoChooChoo extends LinearOpMode {
         // Delete or comment this out for competition
 
         // shootTheBall();
-        // waitForGreen();
+        waitForGreen();
 
         /*
         drive.Distance( 0.6);
