@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import static android.R.attr.left;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 /**
@@ -33,17 +35,14 @@ public class HardwareChooChoo
     public DcMotor harvesterMotor = null;
     public DcMotor shooterMotor = null;
     public TouchSensor cockedTouchSensor = null;
-    //public ModernRoboticsI2cGyro gyro = null;
     public ColorSensor right_color = null;
+    public ColorSensor left_color = null;
+    I2cAddr left_color_address = null;
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
 
-
-
-    // The IMU sensor object  (Adafruit Gyro)
+    // The IMU sensor object  (Adafruit Gyro)  and variables.
     BNO055IMU imu;
-
-    // State used for updating telemetry
     public Orientation angles;
     public Acceleration gravity;
 
@@ -116,17 +115,22 @@ public class HardwareChooChoo
         rightMotor.setZeroPowerBehavior( BRAKE );
         leftMotor.setZeroPowerBehavior( BRAKE );
         harvesterMotor = hardwareMap.dcMotor.get("harvester");
-        //harvooterMotor.setDirection( DcMotor.Direction.REVERSE);
         shooterMotor = hardwareMap.dcMotor.get( "shooter");
         shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(BRAKE);
-        cockedTouchSensor = hardwareMap.touchSensor.get("cocked_ts");
-        right_color = hardwareMap.colorSensor.get("left_color");
+
+
+        //e you'll want to add code like
+
+        left_color_address = new I2cAddr(0x70);
+        left_color.setI2cAddress( left_color_address);
+        left_color.setI2cAddress(left_color_address);
+        left_color = hardwareMap.colorSensor.get("left_color");
+        right_color = hardwareMap.colorSensor.get("right_color");
+
         //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
-        ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
-        lightSensor = hardwareMap.lightSensor.get("light");
 
         // Set motor powers to zero
         leftMotor.setPower( 0 );

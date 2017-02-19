@@ -42,29 +42,79 @@ public class AutoChooChoo extends LinearOpMode {
     ////////////////////////////   CLAIM BEACON ///////////////////////////////////
     // Sense which side of the beacon is our color and then claim it.
     // Complete this routine in the same orientation in which we started.
+
+    static final boolean LEFT_SIDE = false;
+    static final boolean RIGHT_SIDE = true;
+    static final int NO_COLOR = 0;
+    static final int COLOR_BLUE = 1;
+    static final int COLOR_RED = 2;
+
+
     public void senseBeaconAndClaim() throws InterruptedException {
-        double claimAngle = 7;
 
-        // First pivot so we are trying to press the right button.
-        switch (isRightBlue() ){
+        switch (getBeaconColor( RIGHT_SIDE )){
 
-            case 0:     // No color detected, nothing we can do here.
+            case NO_COLOR:     // No color detected, nothing we can do here.
                 return;
-            case 1:    // Blue is on the right
+            case COLOR_BLUE:    // Blue is on the right
                 if (teamColorBlue) { // and we are blue, so pivot right;
-                    drive.pivotAngle( -claimAngle );
+                    claimBeacon( RIGHT_SIDE );;
                 } else {
-                    drive.pivotAngle( claimAngle );
+                    claimBeacon( LEFT_SIDE );
                 } break;
-            case 2:
+            case COLOR_RED:
             default:   // Red is on the right
                 if (teamColorBlue) {
-                    drive.pivotAngle( claimAngle);
+                    claimBeacon( LEFT_SIDE );
                 } else {
-                    drive.pivotAngle( -claimAngle);
+                    claimBeacon( RIGHT_SIDE);
                 }
         }
 
+
+    }
+
+    // Color sorting utility, for beacon claiming.
+    // Return:
+    // 0 if we detect no color
+    // 1 if we detect blue
+    // 2 if we detect red.
+    // Pass it true for right side, false for left side.
+    int getBeaconColor( boolean whichSide) {
+        if ( whichSide == RIGHT_SIDE) {
+            // Only try if the there is enough color to say we might know.
+            if (robot.right_color.red() + robot.right_color.blue() > 3) {
+                if (robot.right_color.red() > robot.right_color.blue()) {
+                    return 2;
+                } else {
+                    return 1;
+                }
+
+            } else {
+                return 0;
+            }
+        } else {
+            if (robot.left_color.red() + robot.left_color.blue() > 3) {
+                if (robot.left_color.red() > robot.left_color.blue()) {
+                    return 2;
+                } else {
+                    return 1;
+                }
+
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    // Pass this true to claim the right beacon, false to claim the left.
+    public void claimBeacon( boolean whichSide) throws InterruptedException {
+        double claimAngle = 7;
+        if (whichSide ) {
+            drive.pivotAngle(-claimAngle);
+        } else {
+            drive.pivotAngle(claimAngle);
+        }
         // Drive forward to claim the beacon, and then back off.
         drive.ForTime( 700, 0.2);
         drive.ForTime( 300, -0.3);
@@ -102,25 +152,7 @@ public class AutoChooChoo extends LinearOpMode {
     }
 
 
-    // Color sorting utility, for beacon claiming.
-    // Return:
-    // 0 if we detect no color
-    // 1 if we detect blue
-    // 2 if we detect red.
-    int isRightBlue() {
-        // Only try if the there is enough color to say we might know.
-        if (robot.right_color.red() + robot.right_color.blue() > 3) {
-            if  (robot.right_color.red() > robot.right_color.blue()){
-                return 2;
-            } else {
-                return 1;
-            }
 
-        } else {
-            return 0;
-        }
-
-    }
 
     ////////////////////////////////////  EXECUTION BEGINS HERE ///////////////////////////////////
     @Override
