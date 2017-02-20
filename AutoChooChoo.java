@@ -39,9 +39,8 @@ public class AutoChooChoo extends LinearOpMode {
     }
 
 
-    ////////////////////////////   CLAIM BEACON ///////////////////////////////////
-    // Sense which side of the beacon is our color and then claim it.
-    // Complete this routine in the same orientation in which we started.
+    ////////////////////////////   BEACON CLAIMING ///////////////////////////////////
+    // These are constant that mmake the logic more understandable:
 
     static final boolean LEFT_SIDE = false;
     static final boolean RIGHT_SIDE = true;
@@ -49,13 +48,14 @@ public class AutoChooChoo extends LinearOpMode {
     static final int COLOR_BLUE = 1;
     static final int COLOR_RED = 2;
 
-
-    public void senseBeaconAndClaim() throws InterruptedException {
+    // Sense which side of the beacon is our color and then claim it.
+    // Return true if this is successful.  Return false it it is not.
+    public boolean senseBeaconAndClaim() throws InterruptedException {
 
         switch (getBeaconColor( RIGHT_SIDE )){
 
             case NO_COLOR:     // No color detected, nothing we can do here.
-                return;
+                return false;
             case COLOR_BLUE:    // Blue is on the right
                 if (teamColorBlue) { // and we are blue, so pivot right;
                     claimBeacon( RIGHT_SIDE );;
@@ -70,7 +70,7 @@ public class AutoChooChoo extends LinearOpMode {
                     claimBeacon( RIGHT_SIDE);
                 }
         }
-
+        return true;
 
     }
 
@@ -82,8 +82,10 @@ public class AutoChooChoo extends LinearOpMode {
     // Pass it true for right side, false for left side.
     int getBeaconColor( boolean whichSide) {
         if ( whichSide == RIGHT_SIDE) {
-            // Only try if the there is enough color to say we might know.
-            if (robot.right_color.red() + robot.right_color.blue() > 3) {
+            // Only try if the there is enough color to say we might know, and
+            // it is not a tie.
+            if ((robot.right_color.red() + robot.right_color.blue() > 3) &&
+                    (Math.abs(robot.right_color.red() - robot.right_color.blue()) >= 1))   {
                 if (robot.right_color.red() > robot.right_color.blue()) {
                     return 2;
                 } else {
@@ -94,7 +96,8 @@ public class AutoChooChoo extends LinearOpMode {
                 return 0;
             }
         } else {
-            if (robot.left_color.red() + robot.left_color.blue() > 3) {
+            if ((robot.left_color.red() + robot.left_color.blue() > 3) &&
+                (Math.abs(robot.left_color.red() - robot.left_color.blue()) >= 1)) {
                 if (robot.left_color.red() > robot.left_color.blue()) {
                     return 2;
                 } else {
@@ -108,6 +111,8 @@ public class AutoChooChoo extends LinearOpMode {
     }
 
     // Pass this true to claim the right beacon, false to claim the left.
+    // It pivots a small amount in the proper direction, moves forward, and
+    // then backwards.
     public void claimBeacon( boolean whichSide) throws InterruptedException {
         double claimAngle = 7;
         if (whichSide ) {
