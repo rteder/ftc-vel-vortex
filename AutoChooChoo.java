@@ -22,7 +22,7 @@ public class AutoChooChoo extends LinearOpMode {
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
     // Debugging aid-- wait for press of green button (a).
-    //  Add these as needed so you can setp through the critcial parts.
+    //  Add these as needed so you can step through the critical parts.
     // If enableStops is not set this just returns.
     private void waitForGreen() throws InterruptedException {
         if (!enabableStops) return;
@@ -40,7 +40,7 @@ public class AutoChooChoo extends LinearOpMode {
 
 
     ////////////////////////////   BEACON CLAIMING ///////////////////////////////////
-    // These are constant that mmake the logic more understandable:
+    // These are constant that make the logic more understandable:
 
     static final boolean LEFT_SIDE = false;
     static final boolean RIGHT_SIDE = true;
@@ -51,26 +51,43 @@ public class AutoChooChoo extends LinearOpMode {
     // Sense which side of the beacon is our color and then claim it.
     // Return true if this is successful.  Return false it it is not.
     public boolean senseBeaconAndClaim() throws InterruptedException {
-
-        switch (getBeaconColor( RIGHT_SIDE )){
-
-            case NO_COLOR:     // No color detected, nothing we can do here.
-                return false;
-            case COLOR_BLUE:    // Blue is on the right
-                if (teamColorBlue) { // and we are blue, so pivot right;
-                    claimBeacon( RIGHT_SIDE );;
-                } else {
-                    claimBeacon( LEFT_SIDE );
-                } break;
-            case COLOR_RED:
-            default:   // Red is on the right
-                if (teamColorBlue) {
-                    claimBeacon( LEFT_SIDE );
-                } else {
-                    claimBeacon( RIGHT_SIDE);
-                }
+        if (teamColorBlue) {
+            if(getBeaconColor( RIGHT_SIDE ) == COLOR_BLUE){
+                claimBeacon( RIGHT_SIDE );
+                return true;
+            }
+            if(getBeaconColor( LEFT_SIDE ) == COLOR_BLUE){
+                claimBeacon( LEFT_SIDE);
+                return true;
+            }
+            if(getBeaconColor( RIGHT_SIDE ) == COLOR_RED){
+                claimBeacon( LEFT_SIDE );
+                return true;
+            }
+            if(getBeaconColor( LEFT_SIDE ) == COLOR_RED){
+                claimBeacon( RIGHT_SIDE );
+                return true;
+            }
+            return false;
+        }else{
+            if(getBeaconColor( RIGHT_SIDE ) == COLOR_BLUE){
+                claimBeacon( LEFT_SIDE );
+                return true;
+            }
+            if(getBeaconColor( LEFT_SIDE ) == COLOR_BLUE){
+                claimBeacon( RIGHT_SIDE);
+                return true;
+            }
+            if(getBeaconColor( RIGHT_SIDE ) == COLOR_RED){
+                claimBeacon( RIGHT_SIDE );
+                return true;
+            }
+            if(getBeaconColor( LEFT_SIDE ) == COLOR_RED){
+                claimBeacon( LEFT_SIDE );
+                return true;
+            }
+            return false;
         }
-        return true;
 
     }
 
