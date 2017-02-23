@@ -19,7 +19,7 @@ public class AutoChooChoo extends LinearOpMode {
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
-    private ElapsedTime matchTimer = new ElapsedTime(); // For accelerations.
+    private ElapsedTime matchTimer = new ElapsedTime(); // Since start of match.
 
 
 
@@ -44,7 +44,6 @@ public class AutoChooChoo extends LinearOpMode {
 
     ////////////////////////////   BEACON CLAIMING ///////////////////////////////////
     // These are constant that make the logic more understandable:
-
     static final boolean LEFT_SIDE = false;
     static final boolean RIGHT_SIDE = true;
     static final int NO_COLOR = 0;
@@ -94,7 +93,7 @@ public class AutoChooChoo extends LinearOpMode {
 
     }
 
-    // If we claim the wrong color, claim the beacon again.
+    // If we claimed the wrong color, claim the beacon again.
     public void reclaimBeaconIfNeeded() throws InterruptedException{
         if ( verifyBeacon() == true ) return;
         sleep( 5000 );
@@ -137,6 +136,7 @@ public class AutoChooChoo extends LinearOpMode {
         }
     }
 
+    // Make the moves to claim the beacon.
     // Pass this true to claim the right beacon, false to claim the left.
     // It pivots a small amount in the proper direction, moves forward, and
     // then backwards.
@@ -152,6 +152,8 @@ public class AutoChooChoo extends LinearOpMode {
         drive.ForTime( 300, -0.3);
         drive.pivotToAngle(setHeading); // Leave pointing straight at beacon.
     }
+
+    // Verify that beacon is the right color after we claimed it.
     // If either color sensor shows wrong color, return false. Otherwise, return true.
     public boolean verifyBeacon() throws InterruptedException {
         if (teamColorBlue){
@@ -167,6 +169,9 @@ public class AutoChooChoo extends LinearOpMode {
     }
 
     ///////////////////////  SPECIAL MOVES ///////////////////////////////////
+    // This is called after we claimed first beacon, and before we try to claim
+    // the second.  If there is an obstable, go park on the ramp, because 5
+    // points is better than just raming the other bot.
     public void retreatIfBeaconTwoBlocked() throws InterruptedException {
         if ((robot.range < 1.0 ) || (robot.range > 70.0 )){
             return;
@@ -205,9 +210,6 @@ public class AutoChooChoo extends LinearOpMode {
         robot.shooterMotor.setPower( 0.0 );
     }
 
-
-
-
     ////////////////////////////////////  EXECUTION BEGINS HERE ///////////////////////////////////
     @Override
     public void runOpMode() throws InterruptedException {
@@ -233,10 +235,7 @@ public class AutoChooChoo extends LinearOpMode {
         // of blaming the beacons.
         // Will stay in this loop until the game starts, so you
         // can pick a different team if you want.
-        //telemetry.addData(">", "Pick Team: Red or Blue");
-        //telemetry.addData(">", "GRN (default) Beaons YEL: Ball");
-        //telemetry.update();
-        while(! isStarted() ) {
+          while(! isStarted() ) {
             if (gamepad1.x) {
                 teamColorBlue = true;
                 mirror = -1.0;
@@ -332,7 +331,6 @@ public class AutoChooChoo extends LinearOpMode {
         // Mostly the two sides are a mirror of each other, but the robots are a little different.
 
         // Get to Near the first beacon.
-
         drive.Distance( 0.4 );
         if (teamColorBlue){
            setHeading = 43;             // Point just a bit away from parallel to goal entrance.
@@ -340,7 +338,7 @@ public class AutoChooChoo extends LinearOpMode {
            setHeading = -43;
         }
         drive.pivotToAngle( setHeading );
-        drive.Distance(4.2);            // Should end up near the beacon, line, at an angle.
+        drive.Distance(4.2);            // Should end up near the line at about a 45 degree angle.
         //drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line
         //waitForGreen();
 
@@ -356,25 +354,25 @@ public class AutoChooChoo extends LinearOpMode {
         // waitForGreen();
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
         //waitForGreen();
-        drive.Distance( 0.2 );                // Plus a little closer.  Should be good enough to claim.
+        drive.Distance( 0.2 );            // Plus a little closer.  Should be good enough to claim.
         // waitForGreen();
         //drive.driveToColor( );
         waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
-            drive.Distance( 0.1 );
-            senseBeaconAndClaim();
+            drive.Distance( 0.1 );          // If we missed first time, get closer,
+            senseBeaconAndClaim();          // try again.
         }
-        reclaimBeaconIfNeeded();
+        reclaimBeaconIfNeeded();            // if we messed up try again!
         //drive.Distance( - 0.1 );
-             // straight away from the beacon.
-        drive.pivotIfNeeded(setHeading);    // Once more for precision.
+         drive.pivotIfNeeded(setHeading);    // Once more for precision.
        // waitForGreen();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
+
+        drive.pivotIfNeeded(setHeading);    // Get aimed precisely.
         shootTheBall();
         // waitForGreen();
-        // Here is where we would shoot into the goal if we have time.
 
-                                        //// SECOND BEACON ////
+                                          //// SECOND BEACON ////
         drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line, slightly toward beacon
         retreatIfBeaconTwoBlocked();
         if (teamColorBlue ) {
@@ -393,23 +391,22 @@ public class AutoChooChoo extends LinearOpMode {
         drive.pivotToAngle( setHeading );  // Point to beacon
         // waitForGreen();
         drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
-        drive.Distance(0.1);
+        drive.Distance(0.2);
         waitForGreen();
-        drive.driveToColor( );
-        waitForGreen();
+        // drive.driveToColor( );
+        // waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
             drive.Distance( 0.1 );
             senseBeaconAndClaim();
         }
         reclaimBeaconIfNeeded();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
+
+        // Park on the ramp if we have time.
         // If we run out of time to park on the ramp, just stop.
         if (matchTimer.seconds() > 26) drive.stopAndWait();
         drive.pivotToAngle( 180 );
         drive.Distance( 7.0 );
-        //drive.Distance( - 0.1 );
-
-        // Now would be a great time to dash back to a ramp for 5 pts.
         drive.stopAndWait();
 
     }

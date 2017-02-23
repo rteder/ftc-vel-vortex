@@ -177,18 +177,15 @@ public class HardwareChooChoo
         total_distance_feet = (double) total_distance_counts / COUNTS_PER_FOOT;
 
 
-
-
-
-
-        // Heading from the gyro is 0 to 360, but we convert it to the range of -180 to + 180:
+        // Heading from the gyro is 0 to 360, but we convert it to the range of -160 to + 200:
+        // Not +/- 180, because we might want to go at heading 180 as a valid direction.
         //heading = (double) gyro.getHeading();
         // Read the Adafruit Gyro  (IMU = Inertial Measurement Unit)
         angles   = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         gravity  = imu.getGravity();
         // Sign is reversed compared to the MR Gyro we used to use.
         heading = -angles.firstAngle;
-        if (heading > 180.0 ) heading = heading - 360.0;
+        if (heading > 200 ) heading = heading - 360.0;
         getAngularSpeed();
 
         range = ultrasonicSensor.getUltrasonicLevel();

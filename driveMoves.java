@@ -72,8 +72,8 @@ public class driveMoves {
             stopDrive();
             return;
         } else {
-            // Mover of greater than 3 feet:
-            // First half foot at 0.4
+            // Moves of greater than 3 feet:
+            // First half foot at medium
             ToTargetDistance(shiftPoint, 0.3);
 
             // Now run at 0.5 until 1.5 feet out
