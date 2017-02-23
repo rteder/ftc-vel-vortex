@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="AutoChooChoo", group="TekC")
 //@Disabled
@@ -18,6 +19,8 @@ public class AutoChooChoo extends LinearOpMode {
     boolean teamColorBlue = false;
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    private ElapsedTime matchTimer = new ElapsedTime(); // For accelerations.
+
 
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
@@ -163,9 +166,17 @@ public class AutoChooChoo extends LinearOpMode {
         return true;
     }
 
+    ///////////////////////  SPECIAL MOVES ///////////////////////////////////
+    public void retreatIfBeaconTwoBlocked() throws InterruptedException {
+        if ((robot.range < 1.0 ) || (robot.range > 70.0 )){
+            return;
+        }
+        drive.Distance( -4.0 );
+        drive.stopAndWait();
+    }
     ///////////////////////  SHOOT BALL /////////////////////////////////////
     public void shootTheBall() throws InterruptedException {
-        // Rotate shooter enought to fire ball.
+        // Rotate shooter enough to fire ball.
         while(robot.shooterAngle <= 250){
             robot.updateSensors();
             robot.shooterMotor.setPower(0.5);
@@ -324,13 +335,13 @@ public class AutoChooChoo extends LinearOpMode {
 
         drive.Distance( 0.4 );
         if (teamColorBlue){
-           setHeading = 47;             // Point just a bit away from parallel to goal entrance.
+           setHeading = 43;             // Point just a bit away from parallel to goal entrance.
         } else {
-           setHeading = -47;
+           setHeading = -43;
         }
         drive.pivotToAngle( setHeading );
-        drive.Distance(4.2);            // Should end up near the beaon, line, at an angle.
-        drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line
+        drive.Distance(4.2);            // Should end up near the beacon, line, at an angle.
+        //drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line
         //waitForGreen();
 
                                         ////// FIRST BEACON ///////
@@ -357,14 +368,15 @@ public class AutoChooChoo extends LinearOpMode {
         //drive.Distance( - 0.1 );
              // straight away from the beacon.
         drive.pivotIfNeeded(setHeading);    // Once more for precision.
-        shootTheBall();
        // waitForGreen();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
+        shootTheBall();
         // waitForGreen();
         // Here is where we would shoot into the goal if we have time.
 
                                         //// SECOND BEACON ////
         drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line, slightly toward beacon
+        retreatIfBeaconTwoBlocked();
         if (teamColorBlue ) {
             drive.Distance( 3.2 );      //   End up close to the  line, beacon.
         } else {
@@ -390,6 +402,11 @@ public class AutoChooChoo extends LinearOpMode {
             senseBeaconAndClaim();
         }
         reclaimBeaconIfNeeded();
+        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
+        // If we run out of time to park on the ramp, just stop.
+        if (matchTimer.seconds() > 26) drive.stopAndWait();
+        drive.pivotToAngle( 180 );
+        drive.Distance( 7.0 );
         //drive.Distance( - 0.1 );
 
         // Now would be a great time to dash back to a ramp for 5 pts.
