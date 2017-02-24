@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HardwareChooChoo;
 
+import static android.R.attr.max;
+import static android.os.Build.VERSION_CODES.M;
+
 /**
  * Methods used to drive the robot in Autonomous.
  */
@@ -30,12 +33,22 @@ public class driveMoves {
     // You should start any such move pointed in the right direction.
     // This will make small adjustments in the motor power to maintain the heading.
     void AtHeading(double nominalPower ) throws InterruptedException {
+        double sign = 1.00;
+        if (nominalPower < 0) sign = -1.00;
         double leftPower = nominalPower;
         double gain = 0.10;
         double angleError = robot.heading - desiredHeading;
         angleError = Range.clip( angleError, -5, 5);
-        double rightPower = nominalPower *( 1 + gain * angleError);
-        rightPower = Range.clip( rightPower, -1, 1 );
+        double rightPower = nominalPower *( 1 + gain * angleError * sign);
+
+        // Normalize speeds if any one exceeds +/- 1.0;
+        double max = Math.max(Math.abs(leftPower), Math.abs(rightPower));
+        if (max > 1.0)
+        {
+            leftPower /= max;
+            rightPower /= max;
+        }
+
 
         robot.leftMotor.setPower( leftPower );
         robot.rightMotor.setPower(rightPower);
