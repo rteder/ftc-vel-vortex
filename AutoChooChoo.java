@@ -262,9 +262,8 @@ public class AutoChooChoo extends LinearOpMode {
         // Delete or comment this out for competition
 
         // shootTheBall();
+        /*
         waitForGreen();
-
-
         drive.Distance( 0.6);
         waitForGreen();
 
@@ -274,8 +273,7 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         drive.Distance( -4 );
         waitForGreen();
-
-
+        */
 
         /*
         waitForGreen();
@@ -341,29 +339,34 @@ public class AutoChooChoo extends LinearOpMode {
            setHeading = -43;
         }
         drive.pivotToAngle( setHeading );
-        drive.Distance(4.2);            // Should end up near the line at about a 45 degree angle.
+        drive.Distance(3.7);            // Should end up near the line at about a 45 degree angle.
         //drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line
         //waitForGreen();
 
                                         ////// FIRST BEACON ///////
         drive.driveToLine();            // Find Line
+        /* Compensating for pivot point not needed
         if (teamColorBlue){             // compensate for sensor not being over pivot point.
             drive.Distance( 0.1);
         }else {
             drive.Distance( 0.1 );      //
         }
+        */
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
-        // waitForGreen();
-        drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
         //waitForGreen();
-        drive.Distance( 0.2 );            // Plus a little closer.  Should be good enough to claim.
-        // waitForGreen();
+        drive.driveToRange( 13, false);   // Get as close as ultrasonic sensor will sense reliably
+        //waitForGreen();
+        //drive.Distance( 0.2 );            // Plus a little closer.  Should be good enough to claim.
         //drive.driveToColor( );
         waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
-            drive.Distance( 0.1 );          // If we missed first time, get closer,
+            waitForGreen();
+            drive.Distance( 0.05 );          // If we missed first time, get closer,
             senseBeaconAndClaim();          // try again.
+            drive.Distance( 0.05 );          // If we missed first time, get closer,
+            senseBeaconAndClaim();          // try again.
+
         }
         reclaimBeaconIfNeeded();            // if we messed up try again!
         //drive.Distance( - 0.1 );
@@ -385,16 +388,17 @@ public class AutoChooChoo extends LinearOpMode {
         }
         // waitForGreen();
         drive.driveToLine();
-        if (teamColorBlue){
-            drive.Distance( 0.1);
-        }else {
-            drive.Distance( 0.1);
-        }
+
+        //if (teamColorBlue){
+        //    drive.Distance( 0.1);
+        //}else {
+        //drive.Distance( 0.1);
+        //}
         setHeading = -90 * mirror;
         drive.pivotToAngle( setHeading );  // Point to beacon
         // waitForGreen();
-        drive.driveToRange( 15, false);   // Get as close as ultrasonic sensor will sense reliably
-        drive.Distance(0.2);
+        drive.driveToRange( 13, false);   // Get as close as ultrasonic sensor will sense reliably
+        //drive.Distance(0.2);
         waitForGreen();
         // drive.driveToColor( );
         // waitForGreen();
