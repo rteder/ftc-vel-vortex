@@ -37,9 +37,9 @@ public class HardwareChooChoo
     public TouchSensor cockedTouchSensor = null;
     public ColorSensor right_color = null;
     public ColorSensor left_color = null;
-    I2cAddr left_color_address = null;
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
+    private I2cAddr left_color_address = I2cAddr.create8bit(0x70);
 
     // The IMU sensor object  (Adafruit Gyro)  and variables.
     BNO055IMU imu;
@@ -121,37 +121,30 @@ public class HardwareChooChoo
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(BRAKE);
 
-
-        //e you'll want to add code like
-
-        left_color_address = new I2cAddr(0x70);
-        left_color.setI2cAddress( left_color_address);
-        left_color.setI2cAddress(left_color_address);
-        left_color = hardwareMap.colorSensor.get("left_color");
-        right_color = hardwareMap.colorSensor.get("right_color");
-
-        //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
-
-        // Set motor powers to zero
-        leftMotor.setPower( 0 );
-        rightMotor.setPower( 0 );
-        shooterMotor.setPower( 0 );
-
-        // Set the LEDs off in the beginning
-        right_color.enableLed( false );
-        lightSensor.enableLed(true);
-
-        // Reset the encoders
+        // Reset the encoders, set power to zero.
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftMotor.setPower( 0 );
+        rightMotor.setPower( 0 );
+        shooterMotor.setPower( 0 );
 
+        // Ultrasonic and light sensors:
+        ultrasonicSensor = hardwareMap.ultrasonicSensor.get("sonar");
+        lightSensor = hardwareMap.lightSensor.get("light");
+        lightSensor.enableLed(true);
+
+
+
+        left_color = hardwareMap.colorSensor.get("left_color");
+        left_color.setI2cAddress( left_color_address);
+        right_color = hardwareMap.colorSensor.get("right_color");
+
+        //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
 
         // ADAFRUIT IMU
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
+        // Set up the parameters with which we will use our IMU.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -206,10 +199,6 @@ public class HardwareChooChoo
           colorStatus = String.format("Color RightRB %d %d   LRB: %d  %d", right_color.red(), right_color.blue(),
                   left_color.red(), left_color.blue());
         opMode.telemetry.addLine( colorStatus );
-         //   opMode.telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
-         //            + " Light: " + String.format("%.2f", light) + " Avg:"+ String.format("%.2f", avgLight ) );
-
-
 
         //opMode.telemetry.addData( "AngSpeed", angularSpeed);
         //opMode.telemetry.addData("spin", spinning);

@@ -224,9 +224,9 @@ public class AutoChooChoo extends LinearOpMode {
         telemetry.addData(">", "Gyro Calibrating. Do Not move!");
         telemetry.update();
 
-        String calmsg = "Gyro status: " + robot.imu.getCalibrationStatus().toString();
-        telemetry.addLine( calmsg );
-        telemetry.update();
+        //String calmsg = "Gyro status: " + robot.imu.getCalibrationStatus().toString();
+        //telemetry.addLine( calmsg );
+        //telemetry.update();
         sleep( 2000 );
 
 
