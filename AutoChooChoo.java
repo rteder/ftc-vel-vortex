@@ -264,7 +264,7 @@ public class AutoChooChoo extends LinearOpMode {
         // shootTheBall();
         waitForGreen();
 
-        /*
+
         drive.Distance( 0.6);
         waitForGreen();
 
@@ -272,35 +272,38 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         drive.Distance( 4 );
         waitForGreen();
+        drive.Distance( -4 );
+        waitForGreen();
+
+
+
+        /*
+        waitForGreen();
+        drive.pivotToAngle( 10 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 10 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 90 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 90 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 45 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
+        drive.pivotToAngle( 45 );
+        waitForGreen();
+        drive.pivotToAngle( 0 );
+        waitForGreen();
         */
-
-
-        waitForGreen();
-        drive.pivotToAngle( 10 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        drive.pivotToAngle( 10 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        drive.pivotToAngle( 90 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        drive.pivotToAngle( 90 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        drive.pivotToAngle( 45 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-        drive.pivotToAngle( 45 );
-        waitForGreen();
-        drive.pivotToAngle( 0 );
-        waitForGreen();
-
 
         // drive.driveToColor();
         // waitForGreen();

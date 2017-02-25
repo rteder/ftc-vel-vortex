@@ -39,7 +39,7 @@ public class HardwareChooChoo
     public ColorSensor left_color = null;
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
-    private I2cAddr left_color_address = I2cAddr.create8bit(0x70);
+    private I2cAddr right_color_address = I2cAddr.create8bit(0x70);
 
     // The IMU sensor object  (Adafruit Gyro)  and variables.
     BNO055IMU imu;
@@ -138,8 +138,8 @@ public class HardwareChooChoo
 
 
         left_color = hardwareMap.colorSensor.get("left_color");
-        left_color.setI2cAddress( left_color_address);
         right_color = hardwareMap.colorSensor.get("right_color");
+        right_color.setI2cAddress( right_color_address);
 
         //gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
 
@@ -196,8 +196,8 @@ public class HardwareChooChoo
         opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
                     "Heading:" + String.format("%.2f", heading ));
 
-          colorStatus = String.format("Color RightRB %d %d   LRB: %d  %d", right_color.red(), right_color.blue(),
-                  left_color.red(), left_color.blue());
+          colorStatus = String.format("Color Left R: %d B:%d  Right R: %d B: %d   ", left_color.red(), left_color.blue(),
+                  right_color.red(), right_color.blue());
         opMode.telemetry.addLine( colorStatus );
 
         //opMode.telemetry.addData( "AngSpeed", angularSpeed);
