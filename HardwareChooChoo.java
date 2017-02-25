@@ -203,7 +203,9 @@ public class HardwareChooChoo
         opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
                     "Heading:" + String.format("%.2f", heading ));
 
-         //  colorStatus = String.format("Color R %d B %d ", right_color.red(), right_color.blue() );
+          colorStatus = String.format("Color RightRB %d %d   LRB: %d  %d", right_color.red(), right_color.blue(),
+                  left_color.red(), left_color.blue());
+        opMode.telemetry.addLine( colorStatus );
          //   opMode.telemetry.addData("Colors ", colorStatus + "Range: " + String.format("%.2f", range )
          //            + " Light: " + String.format("%.2f", light) + " Avg:"+ String.format("%.2f", avgLight ) );
 
