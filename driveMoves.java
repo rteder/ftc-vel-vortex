@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HardwareChooChoo;
 
+import static android.R.attr.angle;
 import static android.R.attr.max;
 import static android.os.Build.VERSION_CODES.M;
 
@@ -250,53 +251,39 @@ public class driveMoves {
         desiredHeading = finalAngle;
         boolean posTurn;
         double turnSign = 1.00;
-        double gotGoingFast = 0;
         double breakAngle = 0;
         if (finalAngle > robot.heading) {
-            posTurn = true;
             turnSign = 1.00;
         } else {
-            posTurn = false;
             turnSign = -1.00;
         }
 
         double AngleToGo = Math.abs( finalAngle - robot.heading);
 
-         // No point ina tiny angle don't waste time.
+         // If we are already there, don't waste time.
          if ( AngleToGo < 2) return;
 
-             // Handle small pivots differently.
-        if ( AngleToGo < 15) {
-            // Kick start for 200 mS
-            pivotForTime( 400,turnSign, 0.2);
-          
-            // Now pivot to two degrees shy of final angle at low power.
-            breakAngle = finalAngle - turnSign * 2;
-            Pivot( breakAngle, 0.05);
-            stopDrive();
-            return;
-       }
+         // Kick start for 300 mS, no matter what.
+         // Need thit to get motor going.
+         pivotForTime( 300,turnSign, 0.2);
 
-
-        // if we mave more than 35 until final angle, go fast until we are 30 degrees from final angle
+        // if we mave more than 40 until final angle, go fast until we are 30 degrees from final angle
         if ( AngleToGo > 40) {
             breakAngle = finalAngle - (turnSign * 35);
-            Pivot( breakAngle, 0.2);
-            gotGoingFast = 1.00;
+            Pivot( breakAngle, 0.25);
         }
 
         // if we have more than 20 degrees to go, medium until 15 degrees to final angle
         if ( AngleToGo > 20) {
             breakAngle = finalAngle - (turnSign * 15);
-            Pivot( breakAngle, 0.08);
-            gotGoingFast = 1.00;
+            Pivot( breakAngle, 0.1);
         }
 
         // We must now be faily close.
         // Go slow, but set the breakAngle two decrees from the final angle,
          // or and extra two degrees if we got going fast.
-        breakAngle = finalAngle - (turnSign * (2 + 2 * gotGoingFast));
-        Pivot( breakAngle, 0.05);
+        breakAngle = finalAngle - (turnSign * 2);
+        Pivot( breakAngle, 0.08);
         stopDrive();
         // pivotIfNeeded( finalAngle);
     }
@@ -311,7 +298,7 @@ public class driveMoves {
         }
         // Now pivot if needed.
         if (Math.abs(robot.heading - finalAngle) > 1) {
-            Pivot(finalAngle, .05);
+            Pivot(finalAngle, .08);
             stopDrive();
         }
 
@@ -356,7 +343,7 @@ public class driveMoves {
             robot.rightMotor.setPower(-turnSign * targetPower);
             robot.updateSensors();
         }
-        stopDrive();
+        //stopDrive();
     }
 
 

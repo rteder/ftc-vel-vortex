@@ -274,7 +274,7 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         */
 
-        /*
+
         waitForGreen();
         drive.pivotToAngle( 10 );
         waitForGreen();
@@ -300,7 +300,7 @@ public class AutoChooChoo extends LinearOpMode {
         waitForGreen();
         drive.pivotToAngle( 0 );
         waitForGreen();
-        */
+
 
         // drive.driveToColor();
         // waitForGreen();

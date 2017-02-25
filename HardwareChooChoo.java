@@ -206,7 +206,7 @@ public class HardwareChooChoo
         // opMode.telemetry.update();
         opMode.telemetry.addData("Shooter Angle", shooterAngle);
 
-        opMode.telemetry.addData("loop time mS", loopTimer.milliseconds());
+        // opMode.telemetry.addData("loop time mS", loopTimer.milliseconds());
         loopTimer.reset();
         opMode.telemetry.update();
 
