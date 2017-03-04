@@ -270,6 +270,7 @@ public class AutoChooChoo extends LinearOpMode {
         /////////////////  TEST CODE GOES HERE //////////////////////////
         // Delete or comment this out for competition
 
+        //waitForGreen();
         // shootTheBall();
         /*
         waitForGreen();
@@ -425,15 +426,13 @@ public class AutoChooChoo extends LinearOpMode {
         ///////////////////// PARK ON RAMP IF WE HAVE TIME
         // If we run out of time to park on the ramp, just stop.
         // if (matchTimer.seconds() > 26) drive.stopAndWait();
-        drive.pivotToAngle( 180 );
-
         if (teamColorBlue){
-            drive.pivotToAngle( 180.0 );
-            drive.Distance( -7.0 );
+            drive.pivotToAngle( 181.0 );
+            drive.Distance( 7.0 );
             drive.stopAndWait();
         }else{
-            drive.pivotToAngle( 180.0 );
-            drive.Distance( -7.0 );
+            drive.pivotToAngle( -181.0 );
+            drive.Distance( 7.0 );
             drive.stopAndWait();
         }
         drive.stopAndWait();

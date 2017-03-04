@@ -58,6 +58,8 @@ public class HardwareChooChoo
     public int total_distance_counts = 0;
     public double total_distance_feet = 0;
     int heading_angle_counts = 0;
+    public double gyro = 0; // Raw reading
+    public boolean headingNegative = false;
     public double heading = 0;
     public double prevHeading = 0;
     public double angularVel = 0;
@@ -169,17 +171,25 @@ public class HardwareChooChoo
         total_distance_counts = leftMotor.getCurrentPosition() + rightMotor.getCurrentPosition();
         total_distance_feet = (double) total_distance_counts / COUNTS_PER_FOOT;
 
-
-        // Heading from the gyro is 0 to 360, but we convert it to the range of -110 to + 250:
-        // Not +/- 180, because we might want to go at heading 180 as a valid direction, and
-        // our drive at heading would not work well with that.
-        //heading = (double) gyro.getHeading();
+        // HEADING
+        // Output from the gyro is 0 to 360, but we want
+        // positive and negative outputs, so we can go to, say, -10 degrees.
+        // And, no discontinuity about 0.
+        // We use a flag to detect that we are just positive or negative about zero.
+        // This will work as long as you don't go close to all the way around.
         // Read the Adafruit Gyro  (IMU = Inertial Measurement Unit)
         angles   = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         gravity  = imu.getGravity();
         // Sign is reversed compared to the MR Gyro we used to use.
-        heading = -angles.firstAngle;
-        if (heading > 250 ) heading = heading - 360.0;
+        gyro = -angles.firstAngle;
+        if (gyro > 350) headingNegative = true;
+        if (gyro < 10) headingNegative = false;
+        if (headingNegative) {
+            heading = gyro - 360.0;
+        }
+        else {
+            heading = gyro;
+        }
         getAngularSpeed();
 
         range = ultrasonicSensor.getUltrasonicLevel();
@@ -193,8 +203,8 @@ public class HardwareChooChoo
 
 
         // If any of the flags are set, show data on telemetry.
-        opMode.telemetry.addLine("feet:" + String.format("%.1f", total_distance_feet) +
-                    "Heading:" + String.format("%.2f", heading ));
+        opMode.telemetry.addLine("feet:" + String.format("%.1f ", total_distance_feet) +
+                    "Heading: " + String.format("%.2f", heading ));
 
           colorStatus = String.format("Color Left R: %d B:%d  Right R: %d B: %d   ", left_color.red(), left_color.blue(),
                   right_color.red(), right_color.blue());
