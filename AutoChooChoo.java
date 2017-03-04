@@ -25,18 +25,16 @@ public class AutoChooChoo extends LinearOpMode {
 
     ////////////////////////////////  HELPER FUNCTIONS ////////////////////////////////////////////
     // Debugging aid-- wait for press of green button (a).
-    //  Add these as needed so you can step through the critical parts.
+    // Add these as needed so you can step through the critical parts.
     // If enableStops is not set this just returns.
     private void waitForGreen() throws InterruptedException {
         if (!enabableStops) return;
-        while( true ) {
+         while( !gamepad1.a  ) {   // Stay here until we press wait for green
             drive.stopDrive();
-            if (gamepad1.a) break;
             robot.updateSensors();
         }
-        while( true ) {
+        while( gamepad1.a ) {   // Stay here until we release wait for green
             drive.stopDrive();
-            if (!gamepad1.a) break;
             robot.updateSensors();
         }
     }
@@ -361,12 +359,11 @@ public class AutoChooChoo extends LinearOpMode {
         //drive.driveToColor( );
         waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
-            waitForGreen();
             drive.Distance( 0.05 );          // If we missed first time, get closer,
-            senseBeaconAndClaim();          // try again.
-            drive.Distance( 0.05 );          // If we missed first time, get closer,
-            senseBeaconAndClaim();          // try again.
-
+            if (senseBeaconAndClaim() == false ){  // Try second time.
+                drive.Distance( 0.05 );     // If we missed second time, forward
+                senseBeaconAndClaim();      // Third time is a charm.
+            }
         }
         reclaimBeaconIfNeeded();            // if we messed up try again!
         //drive.Distance( - 0.1 );
@@ -403,8 +400,13 @@ public class AutoChooChoo extends LinearOpMode {
         // drive.driveToColor( );
         // waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
-            drive.Distance( 0.1 );
-            senseBeaconAndClaim();
+            drive.Distance( 0.05 );          // If we missed first time, get closer,
+            waitForGreen();
+            if (senseBeaconAndClaim() == false ){  // Try second time.
+                drive.Distance( 0.05 );     // If we missed second time, forward
+                waitForGreen();
+                senseBeaconAndClaim();      // Third time is a charm.
+            }
         }
         reclaimBeaconIfNeeded();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
