@@ -264,6 +264,7 @@ public class AutoChooChoo extends LinearOpMode {
             telemetry.update();
             idle();
         }
+        matchTimer.reset();
 
 
 
@@ -425,14 +426,19 @@ public class AutoChooChoo extends LinearOpMode {
 
         ///////////////////// PARK ON RAMP IF WE HAVE TIME
         // If we run out of time to park on the ramp, just stop.
-        // if (matchTimer.seconds() > 26) drive.stopAndWait();
+        if (matchTimer.seconds() > 26) {
+            drive.stopDrive();
+            telemetry.addData("Match Timer", matchTimer.seconds());
+            telemetry.update();
+            sleep( 50000 );
+        }
         if (teamColorBlue){
             drive.pivotToAngle( 181.0 );
-            drive.Distance( 7.0 );
+            drive.Distance( 7.1 );
             drive.stopAndWait();
         }else{
             drive.pivotToAngle( -181.0 );
-            drive.Distance( 7.0 );
+            drive.Distance( 7.1 );
             drive.stopAndWait();
         }
         drive.stopAndWait();

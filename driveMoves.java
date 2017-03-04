@@ -64,7 +64,7 @@ public class driveMoves {
 
         // To keep it simple, all backward moves are at low power.
         if (distanceToGo < 0) {
-            ToTargetDistance(target, 0.2);
+            ToTargetDistance(target, 0.3);
             stopDrive();
             return;
         }
@@ -88,16 +88,16 @@ public class driveMoves {
         } else {
             // Moves of greater than 3 feet:
             // First half foot at medium
-            ToTargetDistance(shiftPoint, 0.3);
+            ToTargetDistance(shiftPoint, 0.4);
 
             // Now run at 0.5 until 1.5 feet out
-            ToTargetDistance(decelPoint1, 0.5);
+            ToTargetDistance(decelPoint1, 0.7);
 
             // Now run at 0.3 until 0.5 feet away
-            ToTargetDistance(decelPoint2, 0.3);
+            ToTargetDistance(decelPoint2, 0.4);
 
             // And come in slow for 0.5
-            ToTargetDistance(target, 0.2);
+            ToTargetDistance(target, 0.3);
             stopDrive();
             return;
         }
@@ -164,7 +164,7 @@ public class driveMoves {
     public void driveToLine()throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        double motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.3;  // Nice and slow.
         while (true) {
             robot.leftMotor.setPower(motorPower);
             robot.rightMotor.setPower(motorPower);
@@ -186,7 +186,7 @@ public class driveMoves {
     public void driveToRange(double targetRange, boolean finalStop ) throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        double motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.3;  // Nice and slow.
         // Drive as long as we are are outside a range.
         // The sensor will sometimes say a range of zero, which is not valid.
         // So also keep driving if we do not have a valid range reading.
@@ -206,7 +206,7 @@ public class driveMoves {
     public void driveFromRange(double targetRange, double desiredHeading ) throws InterruptedException {
         robot.updateSensors();
         accelTimer.reset();
-        double motorPower = 0.2;  // Nice and slow.
+        double motorPower = 0.3;  // Nice and slow.
         while (robot.range < targetRange) {
             // Drive at heading does not work right with negative value, so just
             // drive.
