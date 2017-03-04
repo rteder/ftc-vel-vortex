@@ -174,8 +174,19 @@ public class AutoChooChoo extends LinearOpMode {
         if ((robot.range < 1.0 ) || (robot.range > 70.0 )){
             return;
         }
-        drive.Distance( -4.0 );
-        drive.stopAndWait();
+
+
+        if (teamColorBlue){
+            drive.pivotToAngle( 5.0 );
+            drive.Distance( -3.0 );
+            drive.stopAndWait();
+        }else{
+            drive.pivotToAngle( -5.0 );
+            drive.Distance( -3.0 );
+            drive.stopAndWait();
+        }
+
+
     }
     ///////////////////////  SHOOT BALL /////////////////////////////////////
     public void shootTheBall() throws InterruptedException {
@@ -332,9 +343,9 @@ public class AutoChooChoo extends LinearOpMode {
         // Get to Near the first beacon.
         drive.Distance( 0.4 );
         if (teamColorBlue){
-           setHeading = 43;             // Point just a bit away from parallel to goal entrance.
+           setHeading = 44;             // Point just a bit away from parallel to goal entrance.
         } else {
-           setHeading = -43;
+           setHeading = -44;
         }
         drive.pivotToAngle( setHeading );
         drive.Distance(3.7);            // Should end up near the line at about a 45 degree angle.
@@ -356,8 +367,7 @@ public class AutoChooChoo extends LinearOpMode {
         drive.driveToRange( 13, false);   // Get as close as ultrasonic sensor will sense reliably
         //waitForGreen();
         //drive.Distance( 0.2 );            // Plus a little closer.  Should be good enough to claim.
-        //drive.driveToColor( );
-        waitForGreen();
+        //drive.driveToColor( )
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
             drive.Distance( 0.05 );          // If we missed first time, get closer,
             if (senseBeaconAndClaim() == false ){  // Try second time.
@@ -366,21 +376,23 @@ public class AutoChooChoo extends LinearOpMode {
             }
         }
         reclaimBeaconIfNeeded();            // if we messed up try again!
-        //drive.Distance( - 0.1 );
-         drive.pivotIfNeeded(setHeading);    // Once more for precision.
-       // waitForGreen();
-        drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
 
-        drive.pivotIfNeeded(setHeading);    // Get aimed precisely.
+                                                ////////////// Shoot Ball in Center Vortex //////////////
+        drive.driveFromRange( 55.0, setHeading );  // Get to right distance to shoot the ball.
+        drive.pivotIfNeeded(setHeading);
         shootTheBall();
-        // waitForGreen();
+        drive.driveToRange( 30.0, true );
 
-                                          //// SECOND BEACON ////
-        drive.pivotToAngle( 0 );        // Pointed toward perpendicular to line, slightly toward beacon
+                                                //// SECOND BEACON ////
+        //waitForGreen();
+        drive.pivotToAngle( 0 );                // Pointed toward perpendicular to line, slightly toward beacon
+
         retreatIfBeaconTwoBlocked();
         if (teamColorBlue ) {
+            //waitForGreen();
             drive.Distance( 3.2 );      //   End up close to the  line, beacon.
         } else {
+            //waitForGreen();
             drive.Distance( 3.2 );           // End up close to the  line, beacon.
         }
         // waitForGreen();
@@ -396,26 +408,34 @@ public class AutoChooChoo extends LinearOpMode {
         // waitForGreen();
         drive.driveToRange( 13, false);   // Get as close as ultrasonic sensor will sense reliably
         //drive.Distance(0.2);
-        waitForGreen();
+        //waitForGreen();
         // drive.driveToColor( );
         // waitForGreen();
         if (senseBeaconAndClaim() == false ){ // claim that beacon!
             drive.Distance( 0.05 );          // If we missed first time, get closer,
-            waitForGreen();
+            //waitForGreen();
             if (senseBeaconAndClaim() == false ){  // Try second time.
                 drive.Distance( 0.05 );     // If we missed second time, forward
-                waitForGreen();
                 senseBeaconAndClaim();      // Third time is a charm.
             }
         }
         reclaimBeaconIfNeeded();
         drive.driveFromRange( 25, setHeading );    // Now back away from beacon.
 
-        // Park on the ramp if we have time.
+        ///////////////////// PARK ON RAMP IF WE HAVE TIME
         // If we run out of time to park on the ramp, just stop.
-        if (matchTimer.seconds() > 26) drive.stopAndWait();
+        // if (matchTimer.seconds() > 26) drive.stopAndWait();
         drive.pivotToAngle( 180 );
-        drive.Distance( 7.0 );
+
+        if (teamColorBlue){
+            drive.pivotToAngle( 180.0 );
+            drive.Distance( -7.0 );
+            drive.stopAndWait();
+        }else{
+            drive.pivotToAngle( 180.0 );
+            drive.Distance( -7.0 );
+            drive.stopAndWait();
+        }
         drive.stopAndWait();
 
     }
