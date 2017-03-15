@@ -326,12 +326,12 @@ public class AutoChooChoo extends LinearOpMode {
         if (moveBall){
             sleep( 9000 );
             drive.desiredHeading = 0;
-            drive.Distance(-1.0 );  // Away from wall.
+            drive.Distance(-1.3 );  // Away from wall.
             setHeading = mirror * -45;       // turn to center goal.
             drive.pivotToAngle( setHeading );
-            drive.Distance(-0.8 );  //Closer to goal.
+            //drive.Distance(-0.8 );  //Closer to goal.
             shootTheBall();
-            drive.Distance( -4 );   // And drive up onto wood.
+            drive.Distance( -4.8 );   // And drive up onto wood.
             drive.stopAndWait();                      // And we're done.
         }
 
@@ -380,10 +380,11 @@ public class AutoChooChoo extends LinearOpMode {
         reclaimBeaconIfNeeded();            // if we messed up try again!
 
                                                 ////////////// Shoot Ball in Center Vortex //////////////
-        drive.driveFromRange( 55.0, setHeading );  // Get to right distance to shoot the ball.
+        //drive.driveFromRange( 55.0, setHeading );  // Get to right distance to shoot the ball.
         drive.pivotIfNeeded(setHeading);
         shootTheBall();
-        drive.driveToRange( 30.0, true );
+        drive.driveFromRange( 30, setHeading );
+        //drive.driveToRange( 30.0, true );
 
                                                 //// SECOND BEACON ////
         //waitForGreen();
