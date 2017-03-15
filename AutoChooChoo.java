@@ -433,11 +433,11 @@ public class AutoChooChoo extends LinearOpMode {
             sleep( 50000 );
         }
         if (teamColorBlue){
-            drive.pivotToAngle( 181.0 );
+            drive.pivotToAngle( 183.0 );
             drive.Distance( 7.1 );
             drive.stopAndWait();
         }else{
-            drive.pivotToAngle( -181.0 );
+            drive.pivotToAngle( -183.0 );
             drive.Distance( 7.1 );
             drive.stopAndWait();
         }
