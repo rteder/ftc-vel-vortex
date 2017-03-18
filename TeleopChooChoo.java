@@ -180,6 +180,8 @@ public class TeleopChooChoo extends OpMode{
         // Left Bumper is un-harvest, full speed.
         // Yellow is harvest slowly to keep balls from coming out.
         // harvesterPower = (double) gamepad2.left_stick_y * -1.0;
+
+        // Re-zeros whenever you run it backwards.
         harvesterEncoder = harvesterMotor.getCurrentPosition();
         int harvesterEncMod = harvesterEncoder % harvesterCountsPerHalfRev;
         harvesterAngle = 180 * (double) harvesterEncMod / (double) harvesterCountsPerHalfRev;
@@ -190,9 +192,13 @@ public class TeleopChooChoo extends OpMode{
             harvesterRunning = true;
 
         } else if (gamepad2.left_bumper) {
-            harvesterPower = -1.00;
+            harvesterPower = -0.20;
             harvesterRunning = true;
         } else {
+            if (harvesterPower < -0.1){
+                harvesterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                harvesterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
             harvesterRunning = false;
             harvesterPower = 0.00;
         }

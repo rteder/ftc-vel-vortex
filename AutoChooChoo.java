@@ -20,6 +20,7 @@ public class AutoChooChoo extends LinearOpMode {
     boolean moveBall = false; // Set this if the mission is move ball, not claim beacons.
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
     private ElapsedTime matchTimer = new ElapsedTime(); // Since start of match.
+    double shooterAim = 0;    // Compensate for shooter aim.  0 = shoots straight.
 
 
 
@@ -329,14 +330,27 @@ public class AutoChooChoo extends LinearOpMode {
             drive.Distance(-1.3 );  // Away from wall.
             setHeading = mirror * -45;       // turn to center goal.
             drive.pivotToAngle( setHeading );
-            //drive.Distance(-0.8 );  //Closer to goal.
+            drive.Distance( -1 );
+            // Shoot the ball
+            if (teamColorBlue){
+                setHeading = 45 - shooterAim;
+            } else {
+                setHeading = -45 - shooterAim;
+            }
+            drive.pivotToAngle( setHeading );
             shootTheBall();
-            drive.Distance( -4.8 );   // And drive up onto wood.
+
+
+            setHeading = mirror * -45;       // turn to center goal.
+            drive.pivotToAngle( setHeading );
+            //drive.Distance(-0.8 );  //Closer to goal.
+
+            drive.Distance( -3.6 );   // And drive up onto wood.
             drive.stopAndWait();                      // And we're done.
         }
 
 
-        /////////////////////  THE ACTUAL AUTONOMOUS MOVEMENTS ///////////////////////////
+        /////////////////////  AUTONOMOUS CODE TO CLAIM BEACONS ///////////////////////////
         // Starting location is square with back wall,
         // Frame lined up with inside seam of first tile with no corner goal.
         // tile seam edge closest to the goal.
@@ -366,8 +380,16 @@ public class AutoChooChoo extends LinearOpMode {
             }
         }
         reclaimBeaconIfNeeded();            // if we messed up try again!
+
+
                                             //////////// SHOOT BALL  //////////////
-        //drive.driveFromRange( 55.0, setHeading );  // Get to right distance to shoot the ball.
+        drive.driveFromRange( 25.0, setHeading );  // Get to right distance to shoot the ball.
+        if (teamColorBlue){
+            setHeading = 90 - shooterAim;             // Slightly less than 90 if shooter is a bit to right.
+        } else {
+            setHeading = -90 - shooterAim;            // Slightly more negative than 90 if shoot aims right.
+        }
+
         drive.pivotIfNeeded(setHeading);
         shootTheBall();
         drive.driveFromRange( 30, setHeading );
