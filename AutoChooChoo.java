@@ -191,6 +191,8 @@ public class AutoChooChoo extends LinearOpMode {
     }
     ///////////////////////  SHOOT BALL /////////////////////////////////////
     public void shootTheBall() throws InterruptedException {
+        if (!this.opModeIsActive()) return;
+
         // Rotate shooter enough to fire ball.
         while(robot.shooterAngle <= 250){
             robot.updateSensors();

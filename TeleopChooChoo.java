@@ -60,6 +60,7 @@ public class TeleopChooChoo extends OpMode{
     //LightSensor lightSensor = null;
     Servo manipulator = null;
 
+
     // Global variables.
     private ElapsedTime shooterTimer = new ElapsedTime();
     private ElapsedTime loopTimer = new ElapsedTime();
@@ -67,6 +68,7 @@ public class TeleopChooChoo extends OpMode{
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
     int harvesterEncoder = 0;
     int harvesterCountsPerHalfRev = 720;
+    int haversterEncZero = 0;                    // Needed because the control hardware so flakey.
     double upPosition = 0.75;
     double downPosition = 0.15;
     double shooterAngle = 0;
@@ -74,7 +76,6 @@ public class TeleopChooChoo extends OpMode{
     double shooterPower = 0.0 ;
     boolean tryToCock = false;
     boolean harvesterRunning = false;
-
 
     // Code to run ONCE when the driver hits INIT.
     // This initializes all of the hardware.
@@ -166,6 +167,7 @@ public class TeleopChooChoo extends OpMode{
         String colorStatus = "";
         double harvesterPosition = 0;
 
+
         /////////////////////////////////  Drive //////////////////////////
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = (double) Range.clip(-gamepad1.left_stick_y, -1, 1);
@@ -182,10 +184,9 @@ public class TeleopChooChoo extends OpMode{
         // harvesterPower = (double) gamepad2.left_stick_y * -1.0;
 
         // Re-zeros whenever you run it backwards.
-        harvesterEncoder = harvesterMotor.getCurrentPosition();
+        harvesterEncoder = harvesterMotor.getCurrentPosition() - haversterEncZero;
         int harvesterEncMod = harvesterEncoder % harvesterCountsPerHalfRev;
         harvesterAngle = 180 * (double) harvesterEncMod / (double) harvesterCountsPerHalfRev;
-        // harvesterAngle = Math.abs(harvesterAngle);
 
         if (gamepad2.left_trigger > 0.5) {
             harvesterPower = 1.00;
@@ -194,14 +195,17 @@ public class TeleopChooChoo extends OpMode{
         } else if (gamepad2.left_bumper) {
             harvesterPower = -0.20;
             harvesterRunning = true;
+            //haversterEncZero = harvesterMotor.getCurrentPosition();
+            harvesterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            harvesterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            harvesterAngle =0;
         } else {
-            if (harvesterPower < -0.1){
-                harvesterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                harvesterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
             harvesterRunning = false;
             harvesterPower = 0.00;
         }
+
+
+
         // Makes sure harvester is zeroed.
         if (harvesterRunning == false){
             if ((harvesterAngle > 175|| (harvesterAngle < 30))){
@@ -217,6 +221,7 @@ public class TeleopChooChoo extends OpMode{
         }
 
         harvesterMotor.setPower(harvesterPower);
+
         ////////////////////////////////// Manipulator Control /////////////////////////////////////////
         if (gamepad1.y) {
             manipulator.setPosition(downPosition);

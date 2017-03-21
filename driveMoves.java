@@ -28,6 +28,7 @@ public class driveMoves {
         this.robot = arobot;
     }
 
+
     /////////////////////////////   STRAIGHT MOVES /////////////////////////////////////
 
     // Drive forward at the desired nominal power, at the desiredheading.
@@ -112,6 +113,7 @@ public class driveMoves {
 
         if ( forward ) {
             while (true) {
+                if (!opMode.opModeIsActive()) break;
                 AtHeading( power );
                 if (robot.total_distance_feet >= target) break;
                 robot.updateSensors();
@@ -120,6 +122,7 @@ public class driveMoves {
             while (true) { // Drive backwards if the target is behind us.
                 // Drive at heading does not work right with negative value, so just
                 // drive.
+                if (!opMode.opModeIsActive()) break;
                 robot.leftMotor.setPower( - power);
                 robot.rightMotor.setPower( - power);
                 if (robot.total_distance_feet <= target) break;
@@ -135,6 +138,7 @@ public class driveMoves {
         robot.updateSensors();
         accelTimer.reset();
         while (accelTimer.milliseconds() < targetMillisconds) {
+            if (!opMode.opModeIsActive()) break;
             robot.leftMotor.setPower(targetPower);
             robot.rightMotor.setPower(targetPower);
             robot.updateSensors();
@@ -146,6 +150,7 @@ public class driveMoves {
     // Shut everything down and do nothing.
     public void stopAndWait() throws InterruptedException {
         while (true) {
+            if (!opMode.opModeIsActive()) break;
             stopDrive();
         }
     }
@@ -166,6 +171,7 @@ public class driveMoves {
         accelTimer.reset();
         double motorPower = 0.3;  // Nice and slow.
         while (true) {
+            if (!opMode.opModeIsActive()) break;
             robot.leftMotor.setPower(motorPower);
             robot.rightMotor.setPower(motorPower);
             robot.updateSensors();
@@ -191,6 +197,7 @@ public class driveMoves {
         // The sensor will sometimes say a range of zero, which is not valid.
         // So also keep driving if we do not have a valid range reading.
         while ((robot.range > targetRange) || (robot.range < 1.0)) {
+            if (!opMode.opModeIsActive()) break;
             AtHeading( motorPower );
             robot.updateSensors();
             // If this takes more than five seconds some thing is horribly wrong.  Stop.
@@ -208,6 +215,7 @@ public class driveMoves {
         accelTimer.reset();
         double motorPower = 0.3;  // Nice and slow.
         while (robot.range < targetRange) {
+            if (!opMode.opModeIsActive()) break;
             // Drive at heading does not work right with negative value, so just
             // drive.
             robot.leftMotor.setPower( - motorPower);
@@ -227,7 +235,8 @@ public class driveMoves {
         accelTimer.reset();
         double motorPower = 0.05;  // Really slow!
            while (true) {
-            AtHeading( motorPower );
+               if (!opMode.opModeIsActive()) break;
+               AtHeading( motorPower );
             robot.updateSensors();
             // Requires one color to be at least two more than the other:
             if ((robot.right_color.red() + robot.right_color.blue() > 3) &&
@@ -293,6 +302,7 @@ public class driveMoves {
     public void pivotIfNeeded( double finalAngle )throws InterruptedException {
         // Wait for it to stop.
         while( robot.spinning ) {
+            if (!opMode.opModeIsActive()) break;
             robot.updateSensors();
             stopDrive();
         }
@@ -312,6 +322,7 @@ public class driveMoves {
 
         if (finalAngle > robot.heading) {
             while (true) {
+                if (!opMode.opModeIsActive()) break;
                 robot.leftMotor.setPower(pivotPower);
                 robot.rightMotor.setPower(-pivotPower);
                 if (robot.heading >= finalAngle) break;
@@ -319,6 +330,7 @@ public class driveMoves {
             }
         } else {
             while (true) {
+                if (!opMode.opModeIsActive()) break;
                 robot.leftMotor.setPower(-pivotPower);
                 robot.rightMotor.setPower(pivotPower);
                 if (robot.heading <= finalAngle) break;
@@ -339,6 +351,7 @@ public class driveMoves {
         robot.updateSensors();
         accelTimer.reset();
         while (accelTimer.milliseconds() < targetMillisconds) {
+            if (!opMode.opModeIsActive()) break;
             robot.leftMotor.setPower(turnSign * targetPower);
             robot.rightMotor.setPower(-turnSign * targetPower);
             robot.updateSensors();
