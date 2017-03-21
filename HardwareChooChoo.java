@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -40,6 +41,7 @@ public class HardwareChooChoo
     public UltrasonicSensor ultrasonicSensor = null;
     public LightSensor lightSensor = null;
     private I2cAddr right_color_address = I2cAddr.create8bit(0x70);
+    Servo manipulator = null;
 
     // The IMU sensor object  (Adafruit Gyro)  and variables.
     BNO055IMU imu;
@@ -54,7 +56,7 @@ public class HardwareChooChoo
     int shooterCountsPerRev = 1680;     // Using Neverest 60 motor.
 
 
-
+    double upPosition = 0.75;
     public int total_distance_counts = 0;
     public double total_distance_feet = 0;
     int heading_angle_counts = 0;
@@ -101,7 +103,7 @@ public class HardwareChooChoo
         // configuration are labeled assuming the harvester end is the front of the robot.
         // But for autonomous, we consider the sensor end to be the front of the robot.
         //  So, we reverse Left and Right from the hardware map.
-        // Save reference to Hardware ma
+        // Save reference to Hardware map.
         hardwareMap = ahwMap;
 
         if (reversed) {
@@ -122,6 +124,7 @@ public class HardwareChooChoo
         shooterMotor.setDirection(  DcMotor.Direction.REVERSE);
         shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterMotor.setZeroPowerBehavior(BRAKE);
+        manipulator = hardwareMap.servo.get("manipulator");
 
         // Reset the encoders, set power to zero.
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -160,6 +163,9 @@ public class HardwareChooChoo
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        manipulator.setPosition(upPosition);
+
 
     }
     // Update the sensors and display telemetry.
