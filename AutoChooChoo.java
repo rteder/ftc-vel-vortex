@@ -394,7 +394,7 @@ public class AutoChooChoo extends LinearOpMode {
 
         drive.pivotIfNeeded(setHeading);
         shootTheBall();
-        drive.driveFromRange( 30, setHeading );
+        // drive.driveFromRange( 30, setHeading );  // No need to do this, we are about right range.
         //drive.driveToRange( 30.0, true );
         //waitForGreen();
                                             //// SECOND BEACON ////
